@@ -17,32 +17,32 @@ class SyntacticalError(ProgramError):  # should really be called SyntaxError but
     """This error occurs when trying to parse a line that's not of a correct format, or attempts to call a non-existent function"""
 
 
-def parse_line(line: str, vars: dict[str, int]) -> None:
+def parse_line(line: str, variables: dict[str, int]) -> None:
     """Parse a line of Bare Bones"""
     clear_match = re.fullmatch(r"clear (\w+);", line)
     if clear_match:
         variable_name = clear_match.group(1)
-        vars[variable_name] = 0
+        variables[variable_name] = 0
 
     else:
         incr_match = re.fullmatch(r"incr (\w+);", line)
         if incr_match:
             variable_name = incr_match.group(1)
-            if variable_name not in vars:
+            if variable_name not in variables:
                 raise UndefinedVariableError(f"Tried to increment the variable '{variable_name}' prior to it being initialised")
             else:
-                vars[variable_name] += 1
+                variables[variable_name] += 1
 
         else:
             decr_match = re.fullmatch(r"decr (\w+);", line)
             if decr_match:
                 variable_name = decr_match.group(1)
-                if variable_name not in vars:
+                if variable_name not in variables:
                     raise UndefinedVariableError(f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
-                elif vars[variable_name] == 0:
+                elif variables[variable_name] == 0:
                     raise NegativeError(f"Tried to decrement '{variable_name}' however it was already 0")
                 else:
-                    vars[variable_name] -= 1
+                    variables[variable_name] -= 1
 
             else:
                 raise SyntacticalError(f"Unparsable line '{line}'")
@@ -56,16 +56,16 @@ def begin_repl():
     - `quit` -- Exits REPL mode
     - `vars` -- Prints the values of all defined variables
     """
-    vars = {}
+    variables = {}
     while True:
         line = input(">>> ")
         if line == "quit;":
             break
         elif line == "vars;":
-            print(*(f"{var}: {val}" for var, val in vars.items()), sep="\n")
+            print(*(f"{var}: {val}" for var, val in variables.items()), sep="\n")
         else:
             try:
-                parse_line(line, vars)
+                parse_line(line, variables)
             except ProgramError as e:
                 print(e)
 
