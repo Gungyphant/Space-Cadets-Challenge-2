@@ -19,6 +19,8 @@ class SyntacticalError(ProgramError):  # should really be called SyntaxError but
 
 def parse_line(line: str, variables: dict[str, int]) -> None:
     """Parse a line of Bare Bones"""
+    line = line.strip()  # Indentation and trailing whitespace is ignored
+
     clear_match = re.fullmatch(r"clear (\w+);", line)
     if clear_match:
         variable_name = clear_match.group(1)
