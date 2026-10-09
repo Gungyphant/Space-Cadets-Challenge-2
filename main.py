@@ -24,12 +24,15 @@ class MultilineExpressionError(ProgramError):
 VariableDict = dict[str, int]  # Custom type hint for variables
 
 
-def parse_line(line: str, variables: VariableDict) -> None:
+def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> None:
     """Parse a line of Bare Bones, updating `variables` accordingly
 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
+    Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
     """
-    line = line.strip()  # Indentation and trailing whitespace is ignored
+    if not line: return  # Ignore blank lines
+    if do_strip:
+        line = line.strip()  # Indentation and trailing whitespace is ignored
 
     incr_match = re.fullmatch(r"incr (\w+);", line)
     if incr_match:
