@@ -1,3 +1,4 @@
+import os
 import re
 
 
@@ -148,9 +149,14 @@ def parse_file(filepath: str) -> VariableDict:
     f = open(filepath)
     code = f.readlines()
     f.close()
-    return parse_code(file)
     return parse_code(code)
 
 
+def _run_all_tests() -> None:
+    """Runs every file in BB files/Testing using parse_file"""
+    for test_file in os.listdir("BB files/Testing"):
+        print(test_file, parse_file(f"BB files/Testing/{test_file}"))
+
+
 if __name__ == "__main__":
-    begin_repl()
+    _run_all_tests()
