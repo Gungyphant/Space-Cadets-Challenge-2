@@ -28,30 +28,32 @@ def parse_line(line: str, variables: dict[str, int]) -> None:
     """
     line = line.strip()  # Indentation and trailing whitespace is ignored
 
-    clear_match = re.fullmatch(r"clear (\w+);", line)
-    if clear_match:
-        variable_name = clear_match.group(1)
-        variables[variable_name] = 0
+    incr_match = re.fullmatch(r"incr (\w+);", line)
+    if incr_match:
+        variable_name = incr_match.group(1)
+        if variable_name not in variables:
+            raise UndefinedVariableError(
+                f"Tried to increment the variable '{variable_name}' prior to it being initialised")
+        else:
+            variables[variable_name] += 1
 
     else:
-        incr_match = re.fullmatch(r"incr (\w+);", line)
-        if incr_match:
-            variable_name = incr_match.group(1)
+        decr_match = re.fullmatch(r"decr (\w+);", line)
+        if decr_match:
+            variable_name = decr_match.group(1)
             if variable_name not in variables:
-                raise UndefinedVariableError(f"Tried to increment the variable '{variable_name}' prior to it being initialised")
+                raise UndefinedVariableError(
+                    f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
+            elif variables[variable_name] == 0:
+                raise NegativeError(f"Tried to decrement '{variable_name}' however it was already 0")
             else:
-                variables[variable_name] += 1
+                variables[variable_name] -= 1
 
         else:
-            decr_match = re.fullmatch(r"decr (\w+);", line)
-            if decr_match:
-                variable_name = decr_match.group(1)
-                if variable_name not in variables:
-                    raise UndefinedVariableError(f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
-                elif variables[variable_name] == 0:
-                    raise NegativeError(f"Tried to decrement '{variable_name}' however it was already 0")
-                else:
-                    variables[variable_name] -= 1
+            clear_match = re.fullmatch(r"clear (\w+);", line)
+            if clear_match:
+                variable_name = clear_match.group(1)
+                variables[variable_name] = 0
 
             else:
                 # The line is invalid for parse_line; determine which error to raise
