@@ -17,8 +17,15 @@ class SyntacticalError(ProgramError):  # should really be called SyntaxError but
     """This error occurs when trying to parse a line that's not of a correct format, or attempts to call a non-existent function"""
 
 
+class MultilineExpressionError(ProgramError):
+    """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
+
+
 def parse_line(line: str, variables: dict[str, int]) -> None:
-    """Parse a line of Bare Bones"""
+    """Parse a line of Bare Bones, updating `variables` accordingly
+
+    Note: only parses single-line statements; while loops are not supported (use parse_code)
+    """
     line = line.strip()  # Indentation and trailing whitespace is ignored
 
     clear_match = re.fullmatch(r"clear (\w+);", line)
@@ -47,7 +54,11 @@ def parse_line(line: str, variables: dict[str, int]) -> None:
                     variables[variable_name] -= 1
 
             else:
-                raise SyntacticalError(f"Unparsable line '{line}'")
+                # The line is invalid for parse_line; determine which error to raise
+                if re.fullmatch(r"while (\w+) not 0 do;|end;", line):
+                    raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
+                else:
+                    raise SyntacticalError(f"Unparsable line '{line}'")
 
 
 def begin_repl():
