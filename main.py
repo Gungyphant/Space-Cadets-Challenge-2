@@ -22,6 +22,10 @@ class MultilineExpressionError(ProgramError):
     """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
 
 
+class InnerCodeError(ProgramError):
+    """This error occurs when _parse_lines re-raises an exception from your code, with additional information"""
+
+
 VariableDict = dict[str, int]  # Custom type hint for variables
 
 
@@ -92,13 +96,24 @@ def begin_repl() -> None:
                 print(e)
 
 
-def parse_code(code: str | list[str]) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, be_nice: bool = True) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
+    The `be_nice` argument determines if parse_code will print errors instead of raising them
     """
     variables = {}
-    return _parse_code(code, variables)
+    try:
+        return _parse_code(code, variables)
+    except InnerCodeError as e:
+        message = ""
+        for line in e.args[0].splitlines(keepends=True):
+            message += f"! {line}"  # Add !s to draw attention to errors
+        if be_nice:
+            print(message)  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
+            return variables
+        else:
+            raise ProgramError(message)
 
 def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     """Parses a subsection of a Bare Bones program
@@ -114,7 +129,8 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     while_mode = False
     while_var = ""
     while_code = []
-    for line in code:
+    while_line_number = -1
+    for line_number, line in enumerate(code):
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
         line = line.strip()  # Indentation and trailing whitespace is ignored
         if not while_mode:
@@ -123,13 +139,23 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
                 while_mode = True
                 while_var = while_match.group(1)
                 while_code = []
+                while_line_number = line_number
             else:
-                parse_line(line, variables, do_strip=False)
+                try:
+                    parse_line(line, variables, do_strip=False)
+                except ProgramError as e:
+                    raise InnerCodeError(f"{type(e).__name__} occurred on line {line_number + 1}: {line}\n{e.args[0]}")
 
         else:
             if re.fullmatch(r"end;", line):  # Is an end command  # TODO bug: this finds the first while; if it's a nested while, this is wrong - maybe track depth; incr by 1 for each while added, decr by 1 for each end; if depth == 0 on end, end, otherwise add to code
                 while variables[while_var] != 0:
-                    _parse_code(while_code, variables)
+                    try:
+                        _parse_code(while_code, variables)
+                    except InnerCodeError as e:  # Should be the only ProgramError that can occur in _parse_code, so better not to unintentionally catch any others
+                        message = f"Within a nested code block on lines {while_line_number + 1}-{line_number + 1}, the following error occurred:\n"
+                        for lower_message_line in e.args[0].splitlines(keepends=True):
+                            message += f"    {lower_message_line}"
+                        raise InnerCodeError(message)
                 while_mode = False
             else:
                 while_code.append(line)
@@ -141,22 +167,30 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     return variables
 
 
-def parse_file(filepath: str) -> VariableDict:
+def parse_file(filepath: str, *, be_nice: bool = True) -> VariableDict:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
+    The `be_nice` argument is passed directly to parse_code; see its documentation for details
     """
     f = open(filepath)
     code = f.readlines()
     f.close()
-    return parse_code(code)
+    return parse_code(code, be_nice=be_nice)
 
 
 def _run_all_tests() -> None:
     """Runs every file in BB files/Testing using parse_file"""
     for test_file in os.listdir("BB files/Testing"):
-        print(test_file, parse_file(f"BB files/Testing/{test_file}"))
+        print(test_file, end=": ")
+        try:
+            print(parse_file(f"BB files/Testing/{test_file}", be_nice=False))
+        except ProgramError as e:
+            print(f"Raised error {repr(e)}")
 
 
 if __name__ == "__main__":
     _run_all_tests()
+    # Known failures:
+    #   02 Multiplication.bb should not raise an error (caused by lack of nested loop support)
+    #   05 Heavily nested error.bb should raise a (nested) NegativeError instead of a SyntacticalError (caused by lack of nested loop support)
