@@ -63,7 +63,7 @@ def parse_line(line: str, variables: dict[str, int]) -> None:
                     raise SyntacticalError(f"Unparsable line '{line}'")
 
 
-def begin_repl():
+def begin_repl() -> None:
     """Activates REPL mode, wherein individual lines of code can be run while maintaining variables
 
     REPL mode also allows the use of the following non-standard commands, for convenience:
