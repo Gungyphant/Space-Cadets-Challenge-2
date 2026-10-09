@@ -79,7 +79,7 @@ def begin_repl() -> None:
     - `vars` -- Prints the values of all defined variables
     """
     variables = {}
-    while True:
+    while True:  # TODO missing feature: add while support similar to parse_code
         line = input(">>> ")
         if line == "quit;":
             break
