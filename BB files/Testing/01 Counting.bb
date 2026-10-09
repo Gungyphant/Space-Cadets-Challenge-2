@@ -5,3 +5,4 @@ incr X;
 while X not 0 do;
    decr X;
 end;
+#{'X': 0}

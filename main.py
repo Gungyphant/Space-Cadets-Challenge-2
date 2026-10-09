@@ -35,7 +35,8 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
     Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
     """
-    if not line: return  # Ignore blank lines
+    if not line or line.startswith("#"):
+        return  # Ignore blank lines and comment lines
     if do_strip:
         line = line.strip()  # Indentation and trailing whitespace is ignored
 
@@ -183,10 +184,19 @@ def _run_all_tests() -> None:
     """Runs every file in BB files/Testing using parse_file"""
     for test_file in os.listdir("BB files/Testing"):
         print(test_file, end=": ")
+        f = open(f"BB files/Testing/{test_file}")
+        code = f.readlines()
+        f.close()
+        expected_result = code[-1][1:]
         try:
-            print(parse_file(f"BB files/Testing/{test_file}", be_nice=False))
+            result = str(parse_code(code, be_nice=False))
         except ProgramError as e:
-            print(f"Raised error {repr(e)}")
+            result = f"Raised error {repr(e)}"
+
+        if result == expected_result:
+            print("Passed")
+        else:
+            print(f"Failed. Got {result}")
 
 
 if __name__ == "__main__":

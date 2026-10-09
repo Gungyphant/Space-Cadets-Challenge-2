@@ -5,3 +5,4 @@ decr X;
   incr X;
 
                incr X;
+#{'X': 3}
