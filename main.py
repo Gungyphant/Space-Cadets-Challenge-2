@@ -21,7 +21,10 @@ class MultilineExpressionError(ProgramError):
     """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
 
 
-def parse_line(line: str, variables: dict[str, int]) -> None:
+VariableDict = dict[str, int]  # Custom type hint for variables
+
+
+def parse_line(line: str, variables: VariableDict) -> None:
     """Parse a line of Bare Bones, updating `variables` accordingly
 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
@@ -83,6 +86,24 @@ def begin_repl() -> None:
                 parse_line(line, variables)
             except ProgramError as e:
                 print(e)
+
+
+def parse_code(code: str) -> VariableDict:
+    """Parses an entire Bare Bones program
+
+    :returns: A dictionary of the final values of the variables when the program terminates
+    """
+
+
+def parse_file(filepath: str) -> VariableDict:
+    """Parses the Bare Bones program located at filepath
+
+    :returns: A dictionary of the final values of the variables when the program terminates
+    """
+    f = open(filepath)
+    file = f.read()
+    f.close()
+    return parse_code(file)
 
 
 if __name__ == "__main__":
