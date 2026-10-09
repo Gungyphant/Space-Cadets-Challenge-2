@@ -91,11 +91,53 @@ def begin_repl() -> None:
                 print(e)
 
 
-def parse_code(code: str) -> VariableDict:
+def parse_code(code: str | list[str]) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
     """
+    variables = {}
+    return _parse_code(code, variables)
+
+def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
+    """Parses a subsection of a Bare Bones program
+
+    :returns: A dictionary of the final values of the variables when the section terminates
+    """
+    # _parse_code works recursively; each `while` block is passed to a new parse_code each time until (if ever) the loop terminates
+    # TODO optimisation: make it non-recursive to reduce function overhead
+    # TODO missing feature: currently, BB while loops can only be nested to a depth of 998 (bc they're recursive, 2 less bc the first parse_code and the active parse_line call use 1 each)
+    if isinstance(code, str):
+        code = code.splitlines()
+
+    while_mode = False
+    while_var = ""
+    while_code = []
+    for line in code:
+        # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
+        line = line.strip()  # Indentation and trailing whitespace is ignored
+        if not while_mode:
+            while_match = re.fullmatch(r"while (\w+) not 0 do;", line)
+            if while_match:
+                while_mode = True
+                while_var = while_match.group(1)
+                while_code = []
+            else:
+                parse_line(line, variables, do_strip=False)
+
+        else:
+            if re.fullmatch(r"end;", line):  # Is an end command  # TODO bug: this finds the first while; if it's a nested while, this is wrong - maybe track depth; incr by 1 for each while added, decr by 1 for each end; if depth == 0 on end, end, otherwise add to code
+                while variables[while_var] != 0:
+                    _parse_code(while_code, variables)
+                while_mode = False
+            else:
+                while_code.append(line)
+
+    if while_mode:
+        # The program terminated without reaching an `end;`
+        raise SyntacticalError(f"A `while` went unclosed")
+
+    return variables
 
 
 def parse_file(filepath: str) -> VariableDict:
@@ -104,9 +146,10 @@ def parse_file(filepath: str) -> VariableDict:
     :returns: A dictionary of the final values of the variables when the program terminates
     """
     f = open(filepath)
-    file = f.read()
+    code = f.readlines()
     f.close()
     return parse_code(file)
+    return parse_code(code)
 
 
 if __name__ == "__main__":
