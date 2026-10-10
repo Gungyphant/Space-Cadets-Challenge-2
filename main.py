@@ -104,29 +104,34 @@ def begin_repl() -> None:
                 print(e)
 
 
-def parse_code(code: str | list[str], *, be_nice: bool = True, quiet: bool = False) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, be_nice: bool = True, loudness: int = 1) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
     The `be_nice` argument determines if parse_code will print errors instead of raising them
+    The `loudness` argument determines how much information should be printed:
+
+    - 0 -- No printing at all (useful for testing and benchmarking)
+    - 1 (default) -- Print any errors that occur
+    - 2 -- 1, and print the state of the program after each line
     """
     variables = {}
     try:
-        return _parse_code(code, variables)
+        return _parse_code(code, variables, loudness)
     except _InnerCodeError as e:
         if be_nice:
-            if not quiet:
+            if loudness >= 1:
                 print(f"! {repr(e.inner_exception)} occurred on line {e.line_number}: {e.line}")  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
         else:
             raise
     except ProgramError as e:
         if be_nice:
-            if not quiet:
+            if loudness >= 1:
                 print(f"! {repr(e)} occurred")
         else:
             raise _InnerCodeError(e, -1, "")
 
-def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
+def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -> VariableDict:
     """Parses a subsection of a Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the section terminates
@@ -142,9 +147,9 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     while_code = []
     while_line_number = -1
     while_depth = 0
-    for line_number, line in enumerate(code):
+    for line_number, true_line in enumerate(code):
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
-        line = line.strip()  # Indentation and trailing whitespace is ignored
+        line = true_line.strip()  # Indentation and trailing whitespace is ignored
         while_match = re.fullmatch(r"while (\w+) not 0 do;", line)
         if not while_mode:
             if while_match:
@@ -158,6 +163,9 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
                     parse_line(line, variables, do_strip=False)
                 except ProgramError as e:
                     raise _InnerCodeError(e, line_number + 1, line)
+                else:
+                    if loudness >= 2 and line and not line.startswith("#"):
+                        print(true_line.replace("\n", ""), variables)
 
         else:
             end_match = re.fullmatch(r"end;", line)
@@ -169,13 +177,13 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
             if end_match and while_depth < 0:
                 while variables[while_var] != 0:
                     try:
-                        _parse_code(while_code, variables)
+                        _parse_code(while_code, variables, loudness)
                     except _InnerCodeError as e:
                         inner_exception, inner_line_number, inner_line = e.inner_exception, e.line_number, e.line
                         raise _InnerCodeError(inner_exception, inner_line_number + while_line_number + 1, inner_line)
                 while_mode = False
             else:
-                while_code.append(line)
+                while_code.append(true_line)
 
     if while_mode:
         # The program terminated without reaching an `end;`
@@ -184,16 +192,16 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     return variables
 
 
-def parse_file(filepath: str, *, be_nice: bool = True) -> VariableDict:
+def parse_file(filepath: str, *, be_nice: bool = True, loudness: int=1) -> VariableDict:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
-    The `be_nice` argument is passed directly to parse_code; see its documentation for details
+    The `be_nice` and `loudness` arguments are passed directly to parse_code; see its documentation for details
     """
     f = open(filepath)
     code = f.readlines()
     f.close()
-    return parse_code(code, be_nice=be_nice)
+    return parse_code(code, be_nice=be_nice, loudness=loudness)
 
 
 def _run_all_tests() -> None:
@@ -235,6 +243,8 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
 
 
 if __name__ == "__main__":
-    _run_all_tests()
-    print()
-    _run_all_benchmarks()
+    # _run_all_tests()
+    # print()
+    # _run_all_benchmarks()
+
+    parse_file("BB files/Testing/07 Extremely nested loop.bb", loudness=2)
