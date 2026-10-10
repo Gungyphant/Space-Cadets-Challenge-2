@@ -207,7 +207,7 @@ def _run_all_tests() -> None:
             except _InnerCodeError as e:
                 result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
             else:
-                result = f"#vars:{",".join(f"{var}={val}" for var, val in variables.items())}"
+                result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
 
             if result == expected_result:
                 print("Passed")
