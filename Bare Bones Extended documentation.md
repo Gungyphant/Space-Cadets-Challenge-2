@@ -67,4 +67,7 @@ will take priority
 
 BBE files can be run directly via the function `parse_extended_file` (or passed as strings 
 to `parse_extended_code`), or compiled into a regular BB program via 
-`compile_extended_file` and run via `parse_file`.
+`compile_extended_file` and run via `parse_file`. Note that `parse_extended_file` compiles 
+the code and runs it together, so if the BBE program will be run several times, it is 
+faster to compile it to a BB file once and run that file repeatedly rather than recompiling 
+every time.
