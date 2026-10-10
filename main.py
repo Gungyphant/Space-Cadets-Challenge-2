@@ -104,11 +104,11 @@ def begin_repl() -> None:
                 print(e)
 
 
-def parse_code(code: str | list[str], *, be_nice: bool = True, loudness: int = 1) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
-    The `be_nice` argument determines if parse_code will print errors instead of raising them
+    The `print_errors` argument determines if parse_code will print errors instead of raising them
     The `loudness` argument determines how much information should be printed:
 
     - 0 -- No printing at all (useful for testing and benchmarking)
@@ -119,13 +119,13 @@ def parse_code(code: str | list[str], *, be_nice: bool = True, loudness: int = 1
     try:
         return _parse_code(code, variables, loudness)
     except _InnerCodeError as e:
-        if be_nice:
+        if print_errors:
             if loudness >= 1:
                 print(f"! {repr(e.inner_exception)} occurred on line {e.line_number}: {e.line}")  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
         else:
             raise
     except ProgramError as e:
-        if be_nice:
+        if print_errors:
             if loudness >= 1:
                 print(f"! {repr(e)} occurred")
         else:
@@ -192,16 +192,16 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     return variables
 
 
-def parse_file(filepath: str, *, be_nice: bool = True, loudness: int=1) -> VariableDict:
+def parse_file(filepath: str, *, print_errors: bool = True, loudness: int=1) -> VariableDict:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
-    The `be_nice` and `loudness` arguments are passed directly to parse_code; see its documentation for details
+    The `print_errors` and `loudness` arguments are passed directly to parse_code; see its documentation for details
     """
     f = open(filepath)
     code = f.readlines()
     f.close()
-    return parse_code(code, be_nice=be_nice, loudness=loudness)
+    return parse_code(code, print_errors=print_errors, loudness=loudness)
 
 
 def _run_all_tests() -> None:
@@ -214,7 +214,7 @@ def _run_all_tests() -> None:
             f.close()
             expected_result = code[-1]
             try:
-                variables = parse_code(code, be_nice=False)
+                variables = parse_code(code, print_errors=False)
             except _InnerCodeError as e:
                 result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
             else:
@@ -237,7 +237,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_code(code, be_nice=True, quiet=True)
+                parse_code(code, print_errors=True, quiet=True)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)}")
 
