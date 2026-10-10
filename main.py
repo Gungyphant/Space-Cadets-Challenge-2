@@ -194,7 +194,7 @@ def parse_file(filepath: str, *, be_nice: bool = True) -> VariableDict:
 
 
 def _run_all_tests() -> None:
-    """Runs every file in 'BB files/Testing' using parse_file"""
+    """Runs every .bb file in 'BB files/Testing' using parse_code"""
     for test_file in os.listdir("BB files/Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
