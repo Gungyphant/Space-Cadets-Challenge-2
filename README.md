@@ -24,3 +24,5 @@ Challenge 2 is to write an interpreter for Bare Bones:
 _source: https://moodle.ecs.soton.ac.uk/mod/page/view.php?id=44750_
 
 The python interpreter has two main functions, `parse_file` and `begin_repl`. The first takes a single input, a filepath, and runs the Bare Bones program located there, and the second enters a REPL state where commands can be entered line-by-line
+
+To pass a file rather than a filepath (as the challenge states), use `parse_code` instead of `parse_file`
