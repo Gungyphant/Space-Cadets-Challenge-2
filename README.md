@@ -21,4 +21,6 @@ Challenge 2 is to write an interpreter for Bare Bones:
 > 
 > Note that while loops must be terminated by an end statement, but that they can be nested.
 
+_source: https://moodle.ecs.soton.ac.uk/mod/page/view.php?id=44750_
+
 The python interpreter has two main functions, `parse_file` and `begin_repl`. The first takes a single input, a filepath, and runs the Bare Bones program located there, and the second enters a REPL state where commands can be entered line-by-line
