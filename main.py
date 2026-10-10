@@ -138,16 +138,18 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     while_var = ""
     while_code = []
     while_line_number = -1
+    while_depth = 0
     for line_number, line in enumerate(code):
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
         line = line.strip()  # Indentation and trailing whitespace is ignored
+        while_match = re.fullmatch(r"while (\w+) not 0 do;", line)
         if not while_mode:
-            while_match = re.fullmatch(r"while (\w+) not 0 do;", line)
             if while_match:
                 while_mode = True
                 while_var = while_match.group(1)
                 while_code = []
                 while_line_number = line_number
+                while_depth = 0
             else:
                 try:
                     parse_line(line, variables, do_strip=False)
@@ -155,7 +157,13 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
                     raise _InnerCodeError(e, line_number + 1, line)
 
         else:
-            if re.fullmatch(r"end;", line):  # Is an end command  # TODO bug: this finds the first end; if it's a nested while, this is wrong - maybe track depth; incr by 1 for each while added, decr by 1 for each end; if depth == 0 on end, end, otherwise add to code
+            end_match = re.fullmatch(r"end;", line)
+            if while_match:
+                while_depth += 1
+            elif end_match:  # Is an end command
+                while_depth -= 1
+
+            if end_match and while_depth < 0:
                 while variables[while_var] != 0:
                     try:
                         _parse_code(while_code, variables)
