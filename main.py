@@ -1,6 +1,8 @@
 import os
 import re
 import time
+import warnings
+
 from utils import *
 
 
@@ -131,6 +133,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
         else:
             raise _InnerCodeError(e, -1, "")
 
+
 def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -> VariableDict:
     """Parses a subsection of a Bare Bones program
 
@@ -192,12 +195,14 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     return variables
 
 
-def parse_file(filepath: str, *, print_errors: bool = True, loudness: int=1) -> VariableDict:
+def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -> VariableDict:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
     The `print_errors` and `loudness` arguments are passed directly to parse_code; see its documentation for details
     """
+    if filepath.endswith(".bbe"):
+        warnings.warn("Warning: parse_file does not support BBE files. See the BBE documentation for details.")
     f = open(filepath)
     code = f.readlines()
     f.close()
@@ -237,7 +242,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_code(code, print_errors=True, quiet=True)
+                parse_code(code, print_errors=True, loudness=0)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)}")
 
