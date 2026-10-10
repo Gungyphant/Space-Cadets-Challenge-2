@@ -1,0 +1,13 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+multiply X by Y into Z;
+#vars:X=2,Y=3,Z=6
