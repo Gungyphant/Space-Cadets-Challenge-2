@@ -5,4 +5,4 @@ decr X;
   incr X;
 
                incr X;
-#{'X': 3}
+#vars:X=3

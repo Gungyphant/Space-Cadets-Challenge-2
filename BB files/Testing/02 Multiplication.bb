@@ -19,4 +19,4 @@ while X not 0 do;
    end;
    decr X;
 end;
-#UNKNOWN
+#vars:X=0,Y=0,Z=6,W=3

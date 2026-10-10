@@ -22,8 +22,12 @@ class MultilineExpressionError(ProgramError):
     """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
 
 
-class InnerCodeError(ProgramError):
-    """This error occurs when _parse_lines re-raises an exception from your code, with additional information"""
+class _InnerCodeError(ProgramError):
+    """This error occurs when _parse_lines re-raises an exception from a program, with additional information"""
+    def __init__(self, inner_exception: ProgramError, line_number: int, line: str):
+        self.inner_exception: ProgramError = inner_exception
+        self.line_number: int = line_number
+        self.line: str = line
 
 
 VariableDict = dict[str, int]  # Custom type hint for variables
@@ -35,10 +39,11 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
     Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
     """
-    if not line or line.startswith("#"):
-        return  # Ignore blank lines and comment lines
     if do_strip:
         line = line.strip()  # Indentation and trailing whitespace is ignored
+
+    if not line or line.startswith("#"):
+        return  # Ignore blank lines and comment lines
 
     incr_match = re.fullmatch(r"incr (\w+);", line)
     if incr_match:
@@ -106,15 +111,17 @@ def parse_code(code: str | list[str], *, be_nice: bool = True) -> VariableDict: 
     variables = {}
     try:
         return _parse_code(code, variables)
-    except InnerCodeError as e:
-        message = ""
-        for line in e.args[0].splitlines(keepends=True):
-            message += f"! {line}"  # Add !s to draw attention to errors
+    except _InnerCodeError as e:
         if be_nice:
-            print(message)  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
+            print(f"! {repr(e.inner_exception)} occurred on line {e.line_number}: {e.line}")  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
             return variables
         else:
-            raise ProgramError(message)
+            raise
+    except ProgramError as e:
+        if be_nice:
+            print(f"! {repr(e)} occurred")
+        else:
+            raise _InnerCodeError(e, -1, "")
 
 def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
     """Parses a subsection of a Bare Bones program
@@ -145,18 +152,16 @@ def _parse_code(code: str | list[str], variables: VariableDict) -> VariableDict:
                 try:
                     parse_line(line, variables, do_strip=False)
                 except ProgramError as e:
-                    raise InnerCodeError(f"{type(e).__name__} occurred on line {line_number + 1}: {line}\n{e.args[0]}")
+                    raise _InnerCodeError(e, line_number + 1, line)
 
         else:
-            if re.fullmatch(r"end;", line):  # Is an end command  # TODO bug: this finds the first while; if it's a nested while, this is wrong - maybe track depth; incr by 1 for each while added, decr by 1 for each end; if depth == 0 on end, end, otherwise add to code
+            if re.fullmatch(r"end;", line):  # Is an end command  # TODO bug: this finds the first end; if it's a nested while, this is wrong - maybe track depth; incr by 1 for each while added, decr by 1 for each end; if depth == 0 on end, end, otherwise add to code
                 while variables[while_var] != 0:
                     try:
                         _parse_code(while_code, variables)
-                    except InnerCodeError as e:  # Should be the only ProgramError that can occur in _parse_code, so better not to unintentionally catch any others
-                        message = f"Within a nested code block on lines {while_line_number + 1}-{line_number + 1}, the following error occurred:\n"
-                        for lower_message_line in e.args[0].splitlines(keepends=True):
-                            message += f"    {lower_message_line}"
-                        raise InnerCodeError(message)
+                    except _InnerCodeError as e:
+                        inner_exception, inner_line_number, inner_line = e.inner_exception, e.line_number, e.line
+                        raise _InnerCodeError(inner_exception, inner_line_number + while_line_number + 1, inner_line)
                 while_mode = False
             else:
                 while_code.append(line)
@@ -181,22 +186,25 @@ def parse_file(filepath: str, *, be_nice: bool = True) -> VariableDict:
 
 
 def _run_all_tests() -> None:
-    """Runs every file in BB files/Testing using parse_file"""
+    """Runs every file in 'BB files/Testing' using parse_file"""
     for test_file in os.listdir("BB files/Testing"):
-        print(test_file, end=": ")
-        f = open(f"BB files/Testing/{test_file}")
-        code = f.readlines()
-        f.close()
-        expected_result = code[-1][1:]
-        try:
-            result = str(parse_code(code, be_nice=False))
-        except ProgramError as e:
-            result = f"Raised error {repr(e)}"
+        if test_file.endswith(".bb"):
+            print(test_file, end=": ")
+            f = open(f"BB files/Testing/{test_file}")
+            code = f.readlines()
+            f.close()
+            expected_result = code[-1]
+            try:
+                variables = parse_code(code, be_nice=False)
+            except _InnerCodeError as e:
+                result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+            else:
+                result = f"#vars:{",".join(f"{var}={val}" for var, val in variables.items())}"
 
-        if result == expected_result:
-            print("Passed")
-        else:
-            print(f"Failed. Got {result}")
+            if result == expected_result:
+                print("Passed")
+            else:
+                print(f"Failed. Got {result}")
 
 
 if __name__ == "__main__":
