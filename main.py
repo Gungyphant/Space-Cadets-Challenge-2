@@ -1,5 +1,7 @@
 import os
 import re
+import time
+from utils import *
 
 
 class ProgramError(Exception):
@@ -102,7 +104,7 @@ def begin_repl() -> None:
                 print(e)
 
 
-def parse_code(code: str | list[str], *, be_nice: bool = True) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, be_nice: bool = True, quiet: bool = False) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -113,13 +115,14 @@ def parse_code(code: str | list[str], *, be_nice: bool = True) -> VariableDict: 
         return _parse_code(code, variables)
     except _InnerCodeError as e:
         if be_nice:
-            print(f"! {repr(e.inner_exception)} occurred on line {e.line_number}: {e.line}")  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
-            return variables
+            if not quiet:
+                print(f"! {repr(e.inner_exception)} occurred on line {e.line_number}: {e.line}")  # By default, a real exception is not raised, since it adds the context of the parse_code function, which isn't relevant to the BB code
         else:
             raise
     except ProgramError as e:
         if be_nice:
-            print(f"! {repr(e)} occurred")
+            if not quiet:
+                print(f"! {repr(e)} occurred")
         else:
             raise _InnerCodeError(e, -1, "")
 
@@ -215,8 +218,23 @@ def _run_all_tests() -> None:
                 print(f"Failed. Got {result}")
 
 
+def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
+    """Times every .bb file in 'BB files/Testing' using parse_file"""
+    for test_file in os.listdir("BB files/Testing"):
+        if test_file.endswith(".bb"):
+            print(test_file, end=": ")
+            f = open(f"BB files/Testing/{test_file}")
+            code = f.readlines()
+            f.close()
+            start_time = time.time()
+            number = 0
+            while time.time() - start_time < time_per_file:
+                parse_code(code, be_nice=True, quiet=True)
+                number += 1
+            print(f"{format_time((time.time() - start_time)/number)}")
+
+
 if __name__ == "__main__":
     _run_all_tests()
-    # Known failures:
-    #   02 Multiplication.bb should not raise an error (caused by lack of nested loop support)
-    #   05 Heavily nested error.bb should raise a (nested) NegativeError instead of a SyntacticalError (caused by lack of nested loop support)
+    print()
+    _run_all_benchmarks()
