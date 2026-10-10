@@ -28,4 +28,4 @@ while A not 0 do;
         end;
     end;
 end;
-#error:NestedError@25
+#error:NegativeError@25
