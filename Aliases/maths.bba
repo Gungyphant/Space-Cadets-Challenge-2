@@ -2,5 +2,9 @@
   {
     "signature": "add {first_addend_variable} into {result_variable}",
     "code": "clear _first_addend_holder;\n\nwhile first_addend_variable not 0 do;\n    incr result_variable;\n    incr _first_addend_holder;\n    decr first_addend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr first_addend_variable;\n    decr _first_addend_holder;\nend;"
+  },
+  {
+    "signature": "add {first_addend_variable} to {second_addend_variable} into {result_variable}",
+    "code": "\nclear result_variable;\nclear _first_addend_holder;\n\nwhile first_addend_variable not 0 do;\n    incr result_variable;\n    incr _first_addend_holder;\n    decr first_addend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr first_addend_variable;\n    decr _first_addend_holder;\nend;\nclear _first_addend_holder;\n\nwhile second_addend_variable not 0 do;\n    incr result_variable;\n    incr _first_addend_holder;\n    decr second_addend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr second_addend_variable;\n    decr _first_addend_holder;\nend;"
   }
 ]

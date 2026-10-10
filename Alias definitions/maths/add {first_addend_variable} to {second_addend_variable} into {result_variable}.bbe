@@ -1,0 +1,5 @@
+using maths;
+
+clear result_variable;
+add first_addend_variable into result_variable;
+add second_addend_variable into result_variable;
