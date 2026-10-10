@@ -17,9 +17,9 @@ code (i.e. cannot include `using`s themselves). Any variables in the `code` whic
 parameter will be replaced with whatever variable is provided to that parameter; all other
 variables must be `clear`ed as in a regular BB program.
 
-To more easily create an alias in the correct format, or to import the code from a file, 
-use Alias generator.py. Warning: despite it performing some checks, it's output should not 
-be considered 100% safe to use in a .bba and certain signatures or variable names may still 
+To more easily create an .bba in the correct format from a folder of files, use 
+Alias generator.py. Warning: despite it performing some checks, it's output should not be 
+considered 100% safe to use in a .bba and certain signatures or variable names may still 
 cause problems. 
 
 Note that, unlike a function in a more advanced programming language, aliases in BBE do 
