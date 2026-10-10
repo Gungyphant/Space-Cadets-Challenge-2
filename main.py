@@ -248,8 +248,6 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
 
 
 if __name__ == "__main__":
-    # _run_all_tests()
-    # print()
-    # _run_all_benchmarks()
-
-    parse_file("BB files/Testing/07 Extremely nested loop.bb", loudness=2)
+    _run_all_tests()
+    print()
+    _run_all_benchmarks()
