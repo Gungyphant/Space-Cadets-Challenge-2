@@ -14,5 +14,13 @@
   {
     "signature": "set {result_variable} to {value_variable}",
     "code": "\nclear result_variable;\nclear _first_addend_holder;\n\nwhile value_variable not 0 do;\n    incr result_variable;\n    incr _first_addend_holder;\n    decr value_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr value_variable;\n    decr _first_addend_holder;\nend;"
+  },
+  {
+    "signature": "subtract {first_addend_variable} from {result_variable}",
+    "code": "clear _first_addend_holder;\n\nwhile first_addend_variable not 0 do;\n    decr result_variable;\n    incr _first_addend_holder;\n    decr first_addend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr first_addend_variable;\n    decr _first_addend_holder;\nend;"
+  },
+  {
+    "signature": "subtract {subtrahend_variable} from {minuend_variable} into {result_variable}",
+    "code": "\n\nclear result_variable;\nclear _first_addend_holder;\n\nwhile subtrahend_variable not 0 do;\n    incr result_variable;\n    incr _first_addend_holder;\n    decr subtrahend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr subtrahend_variable;\n    decr _first_addend_holder;\nend;\nclear _first_addend_holder;\n\nwhile minuend_variable not 0 do;\n    decr result_variable;\n    incr _first_addend_holder;\n    decr minuend_variable;\nend;\n\nwhile _first_addend_holder not 0 do;\n    incr minuend_variable;\n    decr _first_addend_holder;\nend;"
   }
 ]
