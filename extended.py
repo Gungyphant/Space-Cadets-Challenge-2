@@ -1,5 +1,6 @@
 import json
 import pathlib
+import re
 
 from main import *
 from main import _InnerCodeError
@@ -86,16 +87,39 @@ def _de_extend_code(code: list[str]) -> list[str]:
         for regex_form, (parameters, program_code) in aliases.items():
             alias_match = re.fullmatch(regex_form, line)
             if alias_match:
+                converted_code.append("#> " + line)
                 for alias_parameter, corresponding_variable in zip(parameters, alias_match.groups()):
                     program_code = [line.replace(alias_parameter, corresponding_variable) for line in program_code]
                 converted_code += program_code
+                converted_code.append("#< done")
                 keep = False
                 break  # Each line should only match one alias
 
         if keep:
             converted_code.append(line)
 
-    return converted_code
+    return _clean_up_code(converted_code)
+
+
+def _clean_up_code(code: str | list[str]) -> list[str]:
+    """Automatically indents while loops, or when #> or #< are used to manually change the indentation, and removes leading or trailing empty lines"""
+    if isinstance(code, str):
+        code = code.splitlines()
+    indented_code = []
+    depth = 0
+    for line in code:
+        line = line.strip()
+        if re.fullmatch(r"end;", line) or line.startswith("#< "):
+            depth -= 1
+        indented_code.append("    " * depth + line)
+        if re.fullmatch(r"while (\w+) not 0 do;", line) or line.startswith("#> "):
+            depth += 1
+        # This ordering means that whiles increase the indent after themselves, but ends decrease it including themselves
+    while indented_code[0] == "":
+        indented_code = indented_code[1:]
+    while indented_code[-1] == "":
+        indented_code = indented_code[:-1]
+    return indented_code
 
 
 def _run_all_tests() -> None:

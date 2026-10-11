@@ -71,3 +71,9 @@ to `parse_extended_code`), or compiled into a regular BB program via
 the code and runs it together, so if the BBE program will be run several times, it is 
 faster to compile it to a BB file once and run that file repeatedly rather than recompiling 
 every time.
+
+### Additional notes:
+
+When a BBE file is converted to a BB file, it has its indents automatically inserted based 
+on while loops. To mark a section to be indented, place a line beginning `#> ` before it,
+and `#< ` after it to de-indent (this is done automatically for aliases).
