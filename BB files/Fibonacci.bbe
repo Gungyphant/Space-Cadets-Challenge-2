@@ -1,0 +1,16 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+incr X;
+incr X;
+
+clear result;
+incr result;
+
+while X not 0 do;
+    multiply result by X into result;
+    decr X;
+end;
