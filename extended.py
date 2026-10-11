@@ -55,7 +55,7 @@ def compile_extended_file(extended_filepath: str, regular_filepath: str = None) 
     f.close()
 
 
-PARAMETER_REGEX = r"{(\w+)}"
+PARAMETER_REGEX = r"\\{(\w+)\\}"
 
 
 def _de_extend_code(code: list[str]) -> list[str]:
@@ -74,8 +74,9 @@ def _de_extend_code(code: list[str]) -> list[str]:
             for object in json.loads(file):
                 signature = object["signature"]
                 program_code = object["code"].splitlines()
-                parameters = re.findall(PARAMETER_REGEX, signature)
-                regex_form = re.sub(PARAMETER_REGEX, r"(\\w+)", signature) + ";"
+                regex_safe_signature = re.escape(signature).replace(r"\ ", " ")
+                parameters = re.findall(PARAMETER_REGEX, regex_safe_signature)
+                regex_form = re.sub(PARAMETER_REGEX, r"(\\w+)", regex_safe_signature) + ";"  # This escapes every character in the signature. It's faster (and easier) than escaping only special characters, but it results in ugly signatures
                 aliases[regex_form] = (parameters, program_code)
         else:
             non_using_lines.append(line)

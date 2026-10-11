@@ -9,5 +9,5 @@ incr Y;
 incr Y;
 incr Y;
 
-multiply X by Y into Z;
+Z = X * Y;
 #vars:X=2,Y=3,Z=6

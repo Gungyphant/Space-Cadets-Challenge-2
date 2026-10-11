@@ -8,5 +8,5 @@ incr X;
 clear Y;
 incr Y;
 
-add X into Y;
+Y += X;
 #vars:X=3,Y=4

@@ -3,6 +3,7 @@ import pathlib
 import re
 from extended import _de_extend_code
 from main import parse_code, SyntacticalError, _InnerCodeError
+import html
 
 alias_location = input("Directory to generate .bba from relative to ./Alias definitions: ")
 all_valid = False
@@ -13,7 +14,7 @@ while not all_valid:
     all_valid = True
     result = "[\n"
     for file in os.listdir(f"Alias definitions/{alias_location}"):
-        signature = pathlib.Path(file).stem
+        signature = html.unescape(pathlib.Path(file).stem)
         variable_names = re.findall(r"{(\w+)}", signature)
         if any(name in ["incr", "decr", "clear", "while", "not", "0", "do", "end"] for name in variable_names):
             is_valid_signature = False
@@ -22,18 +23,28 @@ while not all_valid:
 
         filepath = os.path.join(f"Alias definitions/{alias_location}", file)
         f = open(filepath)
-        code = f.readlines()
+        _code = f.readlines()
         f.close()
         if filepath.endswith(".bbe"):
-            code = _de_extend_code(code)
+            code = _de_extend_code(_code)
+        else:
+            code = _code
 
         # Check the code is valid before outputting it
         full_code = [f"clear {var};" for var in variable_names] + code
         try:
             parse_code(full_code, print_errors=False, loudness=0)
-        except (SyntacticalError, _InnerCodeError) as e:
+        except SyntacticalError as e:
             all_valid = False
             print(file, e)
+        except _InnerCodeError as e:
+            while isinstance(e, _InnerCodeError):
+                e = e.inner_exception
+            if isinstance(e, SyntacticalError):
+                all_valid = False
+                print(file, e)
+            else:
+                raise
         else:
             result += f"""  {{\n    "signature": "{signature}",\n    "code": "{"\\n".join(line.replace("\n", "") for line in code)}"\n  }},\n"""
 

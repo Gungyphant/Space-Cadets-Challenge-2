@@ -1,7 +1,0 @@
-using maths;
-
-set _fav_copy to first_addend_variable;
-set _sav_copy to second_addend_variable;
-clear result_variable;
-add _fav_copy into result_variable;
-add _sav_copy into result_variable;

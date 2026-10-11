@@ -1,9 +1,0 @@
-using maths;
-
-set _fmv_copy to first_multiplicand_variable;
-set _smv_copy to second_multiplicand_variable;
-clear result_variable;
-while _fmv_copy not 0 do;
-    add _smv_copy into result_variable;
-    decr _fmv_copy;
-end;

@@ -1,0 +1,4 @@
+using maths;
+
+result_variable = subtrahend_variable;
+result_variable -= minuend_variable;
