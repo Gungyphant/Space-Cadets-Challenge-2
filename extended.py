@@ -153,15 +153,26 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             f = open(f"BB files/Testing/{test_file}")
             code = f.readlines()
             f.close()
+
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_extended_code(code, print_errors=True, loudness=0)
+                _de_extend_code(code)
                 number += 1
-            print(f"{format_time((time.time() - start_time)/number)}")
+            print(f"{format_time((time.time() - start_time)/number)} compilation, ", end="")
+
+            de_extended_code = _de_extend_code(code)
+            start_time = time.time()
+            number = 0
+            while time.time() - start_time < time_per_file:
+                parse_code(de_extended_code, print_errors=True, loudness=0)
+                number += 1
+            print(f"{format_time((time.time() - start_time)/number)} execution")
 
 
 if __name__ == "__main__":
     _run_all_tests()
     print()
     _run_all_benchmarks()
+    print()
+    print(parse_extended_file("BB files/Factorial.bbe"))
