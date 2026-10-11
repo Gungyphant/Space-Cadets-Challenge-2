@@ -2,10 +2,13 @@ import os
 import pathlib
 import re
 from extended import _de_extend_code
-from main import parse_code, ProgramError
+from main import parse_code, SyntacticalError, _InnerCodeError
 
 alias_location = input("Directory to generate .bba from relative to ./Alias definitions: ")
 all_valid = False
+f = open(f"Aliases/{alias_location}.bba", "w")
+f.write("[\n]")
+f.close()
 while not all_valid:
     all_valid = True
     result = "[\n"
@@ -28,7 +31,7 @@ while not all_valid:
         full_code = [f"clear {var};" for var in variable_names] + code
         try:
             parse_code(full_code, print_errors=False, loudness=0)
-        except ProgramError:
+        except (SyntacticalError, _InnerCodeError):
             all_valid = False
         else:
             result += f"""  {{\n    "signature": "{signature}",\n    "code": "{"\\n".join(line.replace("\n", "") for line in code)}"\n  }},\n"""
