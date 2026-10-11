@@ -50,7 +50,7 @@ def compile_extended_file(extended_filepath: str, regular_filepath: str = None) 
 
     pathlib.Path(regular_filepath).parent.mkdir(parents=True, exist_ok=True)
     f = open(regular_filepath, "w")
-    f.writelines(new_code)
+    f.write("\n".join(new_code))
     f.close()
 
 
