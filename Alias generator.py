@@ -31,8 +31,9 @@ while not all_valid:
         full_code = [f"clear {var};" for var in variable_names] + code
         try:
             parse_code(full_code, print_errors=False, loudness=0)
-        except (SyntacticalError, _InnerCodeError):
+        except (SyntacticalError, _InnerCodeError) as e:
             all_valid = False
+            print(file, e)
         else:
             result += f"""  {{\n    "signature": "{signature}",\n    "code": "{"\\n".join(line.replace("\n", "") for line in code)}"\n  }},\n"""
 
