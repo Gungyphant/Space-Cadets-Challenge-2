@@ -53,8 +53,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     if incr_match:
         variable_name = incr_match.group(1)
         if variable_name not in variables:
-            raise UndefinedVariableError(
-                f"Tried to increment the variable '{variable_name}' prior to it being initialised")
+            raise UndefinedVariableError(f"Tried to increment the variable '{variable_name}' prior to it being initialised")
         else:
             variables[variable_name] += 1
 
@@ -63,8 +62,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
         if decr_match:
             variable_name = decr_match.group(1)
             if variable_name not in variables:
-                raise UndefinedVariableError(
-                    f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
+                raise UndefinedVariableError(f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
             elif variables[variable_name] == 0:
                 raise NegativeError(f"Tried to decrement '{variable_name}' however it was already 0")
             else:
@@ -178,13 +176,16 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
                 while_depth -= 1
 
             if end_match and while_depth < 0:
-                while variables[while_var] != 0:
-                    try:
-                        _parse_code(while_code, variables, loudness)
-                    except _InnerCodeError as e:
-                        inner_exception, inner_line_number, inner_line = e.inner_exception, e.line_number, e.line
-                        raise _InnerCodeError(inner_exception, inner_line_number + while_line_number + 1, inner_line)
-                while_mode = False
+                try:
+                    while variables[while_var] != 0:
+                        try:
+                            _parse_code(while_code, variables, loudness)
+                        except _InnerCodeError as e:
+                            inner_exception, inner_line_number, inner_line = e.inner_exception, e.line_number, e.line
+                            raise _InnerCodeError(inner_exception, inner_line_number + while_line_number + 1, inner_line)
+                    while_mode = False
+                except KeyError:
+                    raise UndefinedVariableError(f"Tried to have a while based on the variable '{while_var}' prior to it being initialised")
             else:
                 while_code.append(true_line)
 
