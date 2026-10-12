@@ -1,5 +1,5 @@
 ## Testing Documentation 
-Testing files should be regular Bare Bones programs, followed by a results line beginning 
+Testing files should be regular Bare Bones (or Bare Bones Extended) programs, followed by a results line beginning 
 with a #, which indicates the expected output of the program.
 
 ### Successful Terminations
