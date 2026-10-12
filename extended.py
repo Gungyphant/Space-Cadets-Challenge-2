@@ -92,7 +92,7 @@ def _de_extend_code(code: list[str]) -> list[str]:
                 for alias_parameter, corresponding_variable in zip(parameters, alias_match.groups()):
                     program_code = [line.replace(alias_parameter, corresponding_variable) for line in program_code]
                 converted_code += program_code
-                converted_code.append("#< done")
+                converted_code.append("#< done " + line)
                 keep = False
                 break  # Each line should only match one alias
 
