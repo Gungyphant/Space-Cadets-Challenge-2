@@ -17,7 +17,7 @@ while not all_valid:
         result = "[\n"
         for file in os.listdir(f"Alias definitions/{alias_location}"):
             signature = html.unescape(pathlib.Path(file).stem)
-            variable_names = re.findall(r"{(\w+)}", signature)
+            variable_names = re.findall(r"{(\w{2,}|[a-zA-Z_])}", signature)
             if any(name in ["incr", "decr", "clear", "while", "not", "0", "do", "end"] for name in variable_names):
                 is_valid_signature = False
                 print(f"One or more of the parameters in the signature '{signature}' conflict with pre-existing commands and cannot be used")
@@ -57,3 +57,5 @@ while not all_valid:
         f = open(f"Aliases/{alias_location}.bba", "w")
         f.write(result)
         f.close()
+
+print("Successfully compiled all .bbas")

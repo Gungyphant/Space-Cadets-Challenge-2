@@ -49,7 +49,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     if not line or line.startswith("#"):
         return  # Ignore blank lines and comment lines
 
-    incr_match = re.fullmatch(r"incr (\w+);", line)
+    incr_match = re.fullmatch(r"incr (\w{2,}|[a-zA-Z_]);", line)
     if incr_match:
         variable_name = incr_match.group(1)
         if variable_name not in variables:
@@ -58,7 +58,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
             variables[variable_name] += 1
 
     else:
-        decr_match = re.fullmatch(r"decr (\w+);", line)
+        decr_match = re.fullmatch(r"decr (\w{2,}|[a-zA-Z_]);", line)
         if decr_match:
             variable_name = decr_match.group(1)
             if variable_name not in variables:
@@ -69,14 +69,14 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
                 variables[variable_name] -= 1
 
         else:
-            clear_match = re.fullmatch(r"clear (\w+);", line)
+            clear_match = re.fullmatch(r"clear (\w{2,}|[a-zA-Z_]);", line)
             if clear_match:
                 variable_name = clear_match.group(1)
                 variables[variable_name] = 0
 
             else:
                 # The line is invalid for parse_line; determine which error to raise
-                if re.fullmatch(r"while (\w+) not 0 do;|end;", line):
+                if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;|end;", line):
                     raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
                 else:
                     if not line.endswith(";"):
@@ -154,7 +154,7 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     for line_number, true_line in enumerate(code):
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
         line = true_line.strip()  # Indentation and trailing whitespace is ignored
-        while_match = re.fullmatch(r"while (\w+) not 0 do;", line)
+        while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
         if not while_mode:
             if while_match:
                 while_mode = True

@@ -56,7 +56,7 @@ def compile_extended_file(extended_filepath: str, regular_filepath: str | None =
     f.close()
 
 
-PARAMETER_REGEX = r"\\{(\w+)\\}"
+PARAMETER_REGEX = r"\\{(\w{2,}|[a-zA-Z_])\\}"
 
 
 def _de_extend_code(code: list[str]) -> list[str]:
@@ -66,7 +66,7 @@ def _de_extend_code(code: list[str]) -> list[str]:
     aliases = {}  # {regex: (parameter names, code)}
     for line in code:
         line = line.strip()
-        using_match = re.fullmatch(r"\s*using (\w+);", line)
+        using_match = re.fullmatch(r"\s*using (\w{2,}|[a-zA-Z_]);", line)
         if using_match:
             alias = using_match.group(1)
             f = open(f"Aliases/{alias}.bba")
@@ -114,7 +114,7 @@ def _clean_up_code(code: str | list[str]) -> list[str]:
         if re.fullmatch(r"end;", line) or line.startswith("#< "):
             depth -= 1
         indented_code.append("    " * depth + line)
-        if re.fullmatch(r"while (\w+) not 0 do;", line) or line.startswith("#> "):
+        if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line) or line.startswith("#> "):
             depth += 1
         # This ordering means that whiles increase the indent after themselves, but ends decrease it including themselves
     while indented_code[0] == "":
