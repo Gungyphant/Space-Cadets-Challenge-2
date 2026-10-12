@@ -56,7 +56,7 @@ incr X;
 clear Y;
 incr Y;
 
-add X to Y into Z;
+Z = X + Y;
 #vars:X=3,Y=2,Z=5
 ```
 
