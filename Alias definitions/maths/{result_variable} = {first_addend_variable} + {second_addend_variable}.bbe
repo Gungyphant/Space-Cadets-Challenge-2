@@ -1,8 +1,8 @@
 using maths;
 using variables;
 
-_fav_copy = first_addend_variable;
-_sav_copy = second_addend_variable;
+_first_addend_variable_copy = first_addend_variable;
+_second_addend_variable_copy = second_addend_variable;
 clear result_variable;
-result_variable += _fav_copy;
-result_variable += _sav_copy;
+result_variable += _first_addend_variable_copy;
+result_variable += _second_addend_variable_copy;

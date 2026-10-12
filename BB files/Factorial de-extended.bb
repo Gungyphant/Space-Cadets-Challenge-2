@@ -66,4 +66,4 @@ while X not 0 do;
     decr X;
 end;
 # This code will call parse_line O(X!) times. This cannot be improved upon, as the bare minimum number of lines would be X! + 1 (one clear, and X! incrs)
-# The true number, however, is <= 3 + 13.5x - 2.5x^2 + 22e*x!
+# The true number, however, is <= 3 + 13.5X - 2.5X^2 + 22e*X!
