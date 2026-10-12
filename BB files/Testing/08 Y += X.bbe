@@ -2,11 +2,11 @@ using maths;
 
 clear X;
 incr X;
-incr X;
-incr X;
 
 clear Y;
 incr Y;
+incr Y;
+incr Y;
 
-Y += X;
-#vars:X=3,Y=4
+X += Y;
+#vars:X=4,Y=3
