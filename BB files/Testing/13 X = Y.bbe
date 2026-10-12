@@ -1,0 +1,24 @@
+using variables;
+
+# Undefined destination var:
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+X = Y;
+incr X;
+
+# Defined destination var:
+clear A;
+incr A;
+incr A;
+incr A;
+incr A;
+
+clear B;
+incr B;
+
+B = A;
+
+#vars:A=4,B=4,X=4,Y=3
