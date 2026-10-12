@@ -57,4 +57,3 @@ while not all_valid:
         f = open(f"Aliases/{alias_location}.bba", "w")
         f.write(result)
         f.close()
-print(result)

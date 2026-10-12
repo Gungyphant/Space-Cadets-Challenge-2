@@ -106,8 +106,7 @@ def begin_repl() -> None:
             except ProgramError as e:
                 print(e)
 
-
-def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1) -> VariableDict | None:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -133,6 +132,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
                 print(f"! {repr(e)} occurred")
         else:
             raise _InnerCodeError(e, -1, "")
+    return {}
 
 
 def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -> VariableDict:
@@ -199,7 +199,7 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     return variables
 
 
-def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -> VariableDict:
+def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -> dict[str, int] | None:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates

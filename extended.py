@@ -1,6 +1,5 @@
 import json
 import pathlib
-import re
 
 from main import *
 from main import _InnerCodeError
@@ -18,13 +17,15 @@ def parse_extended_file(filepath: str, *, print_errors: bool = True, loudness: i
     return parse_extended_code(code, print_errors=print_errors, loudness=loudness, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
-def parse_extended_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = True) -> VariableDict | None:
+def parse_extended_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = True) -> VariableDict:
     """Parses an entire Bare Bones Extended program
 
     :returns: A dictionary of the final values of the variables when the program terminates
     `discard_underscore_prefixed_variables` determines if variables whose name begins with an underscore, as is standard for variables defined in aliases, should be discarded from the result
     All keyword arguments are the same as in main.parse_code; see its documentation for details
     """
+    if isinstance(code, str):
+        code = code.splitlines()
     result = parse_code(_de_extend_code(code), print_errors=print_errors, loudness=loudness)
     if result and discard_underscore_prefixed_variables:
         return {k: v for k, v in result.items() if not k.startswith("_")}
@@ -32,7 +33,7 @@ def parse_extended_code(code: str | list[str], *, print_errors: bool = True, lou
         return result
 
 
-def compile_extended_file(extended_filepath: str, regular_filepath: str = None) -> None:
+def compile_extended_file(extended_filepath: str, regular_filepath: str | None = None) -> None:
     """Compiles a Bare Bones Extended program into a regular Bare Bones program, for using in main.parse_file
 
     The second argument, if provided, is the destination of the compiled program; otherwise, it will be in the same location as the BBE program with the suffix " de-extended", and the
@@ -71,10 +72,10 @@ def _de_extend_code(code: list[str]) -> list[str]:
             f = open(f"Aliases/{alias}.bba")
             file = f.read()
             f.close()
-            for object in json.loads(file):
-                signature = object["signature"]
-                program_code = object["code"].splitlines()
-                regex_safe_signature = re.escape(signature).replace(r"\ ", " ")
+            for alias_object in json.loads(file):
+                signature: str = alias_object["signature"]
+                program_code = alias_object["code"].splitlines()
+                regex_safe_signature: str = re.escape(signature).replace(r"\ ", " ")
                 parameters = re.findall(PARAMETER_REGEX, regex_safe_signature)
                 regex_form = re.sub(PARAMETER_REGEX, r"(\\w+)", regex_safe_signature) + ";"  # This escapes every character in the signature. It's faster (and easier) than escaping only special characters, but it results in ugly signatures
                 aliases[regex_form] = (parameters, program_code)
