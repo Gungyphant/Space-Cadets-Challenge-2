@@ -77,7 +77,7 @@ def _de_extend_code(code: list[str]) -> list[str]:
                 program_code = alias_object["code"].splitlines()
                 regex_safe_signature: str = re.escape(signature).replace(r"\ ", " ")
                 parameters = re.findall(PARAMETER_REGEX, regex_safe_signature)
-                regex_form = re.sub(PARAMETER_REGEX, r"(\\w+)", regex_safe_signature) + ";"  # This escapes every character in the signature. It's faster (and easier) than escaping only special characters, but it results in ugly signatures
+                regex_form = re.sub(PARAMETER_REGEX, r"(\\w{2,}|[a-zA-Z_])", regex_safe_signature) + ";"  # This escapes every character in the signature. It's faster (and easier) than escaping only special characters, but it results in ugly signatures
                 aliases[regex_form] = (parameters, program_code)
         else:
             non_using_lines.append(line)
@@ -136,13 +136,17 @@ def _run_all_tests() -> None:
             try:
                 variables = parse_extended_code(code, print_errors=False)
             except _InnerCodeError as e:
+                message = e.inner_exception.args[0]
                 result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
             else:
+                message = None
                 result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
 
             if result == expected_result:
                 print("Passed")
             else:
+                if message:
+                    result += " " + message
                 print(f"Failed. Got {result}")
 
 
