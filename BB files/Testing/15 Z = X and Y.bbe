@@ -1,0 +1,17 @@
+using comparisons;
+
+clear X;
+clear Y;
+
+# Both false (0)
+A = X and Y;
+incr X;
+# X is True (1), Y is False (0)
+B = X and Y;
+incr Y;
+# Both True (1)
+C = X and Y;
+decr Y;
+# X True, Y False
+D = X and Y;
+#vars:A=0,B=0,C=1,D=0,X=1,Y=0

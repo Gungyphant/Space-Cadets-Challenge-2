@@ -1,0 +1,7 @@
+using comparisons;
+
+clear X;
+A = X != 0;
+incr X;
+B = X != 0;
+#vars:A=0,B=1,X=1

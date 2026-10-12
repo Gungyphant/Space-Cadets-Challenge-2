@@ -3,6 +3,7 @@ using variables;
 
 _first_condition_copy = first_condition;
 _second_condition_copy = second_condition;
+clear result_variable;
 
 while _first_condition_copy not 0 do;
     clear result_variable;

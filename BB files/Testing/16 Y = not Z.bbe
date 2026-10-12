@@ -1,0 +1,7 @@
+using comparisons;
+
+clear X;
+A = not X;
+incr X;
+B = not X;
+#vars:A=1,B=0,X=1

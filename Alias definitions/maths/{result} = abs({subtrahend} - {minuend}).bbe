@@ -11,9 +11,9 @@ while _neither_are_zero not 0 do;
     decr _subtrahend_copy;
     decr _minuend_copy;
 
-    _subtrahend_copy_ne_zero = _subtrahend_copy != 0
-    _minuend_copy_ne_zero = _minuend_copy != 0
-    _neither_are_zero = _minuend_copy_ne_zero and _subtrahend_copy_ne_zero
+    _subtrahend_copy_ne_zero = _subtrahend_copy != 0;
+    _minuend_copy_ne_zero = _minuend_copy != 0;
+    _neither_are_zero = _minuend_copy_ne_zero and _subtrahend_copy_ne_zero;
 end;
 
 

@@ -1,0 +1,17 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+A = abs(X - Y);
+B = abs(Y - X);
+#vars:A=2,B=2,X=5,Y=3

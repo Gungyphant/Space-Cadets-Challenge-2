@@ -1,0 +1,18 @@
+using comparisons;
+
+clear X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+
+A = X == Y;
+B = Y == X;
+
+incr Y;
+C = X == Y;
+D = Y == X;
+#vars:A=0,B=0,C=1,D=1,X=3,Y=3
