@@ -79,7 +79,10 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
                 if re.fullmatch(r"while (\w+) not 0 do;|end;", line):
                     raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
                 else:
-                    raise SyntacticalError(f"Unparsable line '{line}'")
+                    if not line.endswith(";"):
+                        raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                    else:
+                        raise SyntacticalError(f"Unparsable line '{line}'")
 
 
 def begin_repl() -> None:
