@@ -1,0 +1,11 @@
+using variables;
+
+_first_condition_copy = first_condition;
+
+clear result_variable;
+incr result_variable;
+
+while _first_condition_copy not 0 do;
+    clear result_variable;
+    clear _first_condition_copy;
+end;

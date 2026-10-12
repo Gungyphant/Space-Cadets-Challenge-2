@@ -1,0 +1,10 @@
+using variables;
+
+_value_copy = value;
+
+clear result;
+incr result;
+while _value_copy not 0 do;
+    clear result;
+    clear _value_copy;
+end;

@@ -1,0 +1,17 @@
+using comparisons;
+using variables;
+
+_first_condition_copy = first_condition;
+_second_condition_copy = second_condition;
+
+while _first_condition_copy not 0 do;
+    clear result_variable;
+    incr result_variable;
+    clear _first_condition_copy;
+end;
+
+while _second_condition_copy not 0 do;
+    clear result_variable;
+    incr result_variable;
+    clear _second_condition_copy;
+end;

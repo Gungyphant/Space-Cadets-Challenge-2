@@ -1,0 +1,8 @@
+using comparisons;
+
+# DeMorgan's:
+#  (X and Y) = not ((not X) or (not Y))
+_not_first_condition = not first_condition;
+_not_second_condition = not second_condition;
+_inner_or = _not_first_condition or _not_second_condition;
+result_variable = not _inner_or;
