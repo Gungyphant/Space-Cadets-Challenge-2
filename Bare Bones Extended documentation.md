@@ -76,4 +76,4 @@ every time.
 
 When a BBE file is converted to a BB file, it has its indents automatically inserted based 
 on while loops. To mark a section to be indented, place a line beginning `#> ` before it,
-and `#< ` after it to de-indent (this is done automatically for aliases).
+and `#< ` after it to de-indent (this is done automatically for aliases, as well as a note saying what the alias was).
