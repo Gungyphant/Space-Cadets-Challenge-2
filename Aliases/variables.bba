@@ -1,0 +1,6 @@
+[
+  {
+    "signature": "{result_variable} = {value_variable}",
+    "code": "clear result_variable;\n#> result_variable += value_variable;\n    clear _first_addend_holder;\n    \n    while value_variable not 0 do;\n        incr result_variable;\n        incr _first_addend_holder;\n        decr value_variable;\n    end;\n    \n    while _first_addend_holder not 0 do;\n        incr value_variable;\n        decr _first_addend_holder;\n    end;\n#< done"
+  }
+]
