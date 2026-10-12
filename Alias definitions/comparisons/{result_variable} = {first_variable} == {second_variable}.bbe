@@ -1,0 +1,11 @@
+# Note: first_variable must be greater than second_variable or the program will crash
+using maths;
+_difference = first_variable - second_variable;
+clear result_variable;
+incr result_variable;
+while _difference not 0 do;
+    clear result_variable;
+    clear _difference;
+end;
+
+# If first_variable == second_variable, result_variable = 1. Otherwise, result_variable = 0
