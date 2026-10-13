@@ -33,7 +33,7 @@ while not all_valid:
                 code = _code
 
             # Check the code is valid before outputting it
-            full_code = [f"clear {var};" for var in variable_names] + code
+            full_code = sum([[f"clear {var};", f"incr {var};"] for var in variable_names], []) + code
             try:
                 parse_code(full_code, print_errors=False, loudness=0)
             except SyntacticalError as e:
