@@ -1,0 +1,12 @@
+using variables;
+using comparisons;
+using maths;
+
+_first_value_copy = first_value;
+_second_value_copy = second_value;
+
+_difference = abs(_first_value_copy - _second_value_copy);
+_first_value_plus_difference = _first_value_copy + _difference;
+_first_value_plus_difference_eq_second_value = _first_value_plus_difference == second_value;
+# If X + abs(X - Y) == Y, Y was bigger, so false
+result = not _first_value_plus_difference_eq_second_value;

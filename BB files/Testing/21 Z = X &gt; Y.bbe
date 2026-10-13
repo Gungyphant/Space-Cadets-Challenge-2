@@ -1,0 +1,25 @@
+using comparisons;
+
+clear X;
+incr X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+# X > Y:
+A = X > Y;
+
+incr Y;
+# X == Y:
+B = X > Y;
+
+incr Y;
+# X < Y:
+C = X > Y;
+
+#vars:A=1,B=0,C=0,X=4,Y=5

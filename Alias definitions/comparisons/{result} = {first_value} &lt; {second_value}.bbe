@@ -1,0 +1,4 @@
+using comparisons;
+
+_first_value_ge_second_value = first_value >= second_value;
+result = not _first_value_ge_second_value;

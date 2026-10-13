@@ -1,0 +1,5 @@
+using comparisons;
+
+_first_value_lt_second_value = first_value < second_value;
+_first_value_eq_second_value = first_value == second_value;
+result = _first_value_lt_second_value or _first_value_eq_second_value;
