@@ -117,9 +117,9 @@ def _clean_up_code(code: str | list[str]) -> list[str]:
         if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line) or line.startswith("#> "):
             depth += 1
         # This ordering means that whiles increase the indent after themselves, but ends decrease it including themselves
-    while indented_code[0] == "":
+    while indented_code and indented_code[0] == "":
         indented_code = indented_code[1:]
-    while indented_code[-1] == "":
+    while indented_code and indented_code[-1] == "":
         indented_code = indented_code[:-1]
     return indented_code
 
