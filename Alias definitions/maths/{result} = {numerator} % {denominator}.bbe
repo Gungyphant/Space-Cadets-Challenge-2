@@ -1,0 +1,3 @@
+using maths;
+
+_ r result = numerator / denominator;

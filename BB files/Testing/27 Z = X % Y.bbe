@@ -1,0 +1,20 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+
+A = X % Y;
+
+
+incr X;
+incr X;
+incr Y;
+
+B = X % Y;
+#vars:A=1,B=2,X=5,Y=3
