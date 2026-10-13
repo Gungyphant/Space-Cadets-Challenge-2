@@ -1,0 +1,49 @@
+using maths;
+using comparisons;
+using variables;
+
+
+clear potential_prime;
+incr potential_prime;
+incr potential_prime;
+# Saving this as a constant for later
+TWO = potential_prime;
+# As the only even prime, 2 would otherwise be ignored
+print potential_prime;
+incr potential_prime;
+
+while potential_prime not 0 do;
+    clear is_prime;
+    incr is_prime;
+
+    clear divisor;
+    incr divisor;
+    incr divisor;
+    incr divisor;
+
+    half_potential_prime r _ = potential_prime / TWO;
+
+    # x / 2 ~= sqrt(x) (better than x, while being much faster than properly calculating it)
+    divisor_lt_half_potential_prime = divisor < half_potential_prime;
+    while divisor_lt_half_potential_prime not 0 do;
+        remainder = potential_prime % divisor;
+        divisor_divides_potential_prime = remainder == 0;
+        while divisor_divides_potential_prime not 0 do;
+            clear is_prime;
+            clear divisor_divides_potential_prime;
+        end;
+
+        incr divisor;
+        incr divisor;
+        divisor_lt_half_potential_prime = divisor < half_potential_prime;
+    end;
+
+    while is_prime not 0 do;
+        print potential_prime;
+        clear is_prime;
+    end;
+
+    # No point checking evens:
+    incr potential_prime;
+    incr potential_prime;
+end;
