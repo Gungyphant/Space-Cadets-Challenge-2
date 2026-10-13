@@ -1,0 +1,17 @@
+using maths;
+
+clear first_val;
+incr first_val;
+clear second_val;
+incr second_val;
+
+print first_val;
+print second_val;
+
+while first_val not 0 do;
+    # ^ Effectively a while True
+    first_val = first_val + second_val;
+    print first_val;
+    second_val = first_val + second_val;
+    print second_val;
+end;
