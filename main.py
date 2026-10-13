@@ -26,6 +26,10 @@ class MultilineExpressionError(ProgramError):
     """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
 
 
+class TimeoutError(ProgramError):
+    """This error occurs when a program takes longer than the timeout"""
+
+
 class _InnerCodeError(ProgramError):
     """This error occurs when _parse_lines re-raises an exception from a program, with additional information"""
     def __init__(self, inner_exception: ProgramError, line_number: int, line: str):
@@ -106,7 +110,7 @@ def begin_repl() -> None:
             except ProgramError as e:
                 print(e)
 
-def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, timeout: float = float("inf")) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -116,10 +120,12 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     - 0 -- No printing at all (useful for testing and benchmarking)
     - 1 (default) -- Print any errors that occur
     - 2 -- 1, and print the state of the program after each line
+
+    The `timeout` argument will, if the program has been running for that long, cause an error to be raised before parsing the next line
     """
     variables = {}
     try:
-        return _parse_code(code, variables, loudness)
+        return _parse_code(code, variables, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
@@ -135,7 +141,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     return {}
 
 
-def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -> VariableDict:
+def _parse_code(code: str | list[str], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
     """Parses a subsection of a Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the section terminates
@@ -146,6 +152,9 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     if isinstance(code, str):
         code = code.splitlines()
 
+    # if timeout < float("inf"):
+    start_time = time.time()
+
     while_mode = False
     while_var = ""
     while_code = []
@@ -153,6 +162,8 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
     while_depth = 0
     for line_number, true_line in enumerate(code):
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
+        if timeout < float("inf") and time.time() - start_time > timeout:
+            raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
         line = true_line.strip()  # Indentation and trailing whitespace is ignored
         while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
         if not while_mode:
@@ -182,7 +193,10 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int) -
                 try:
                     while variables[while_var] != 0:
                         try:
-                            _parse_code(while_code, variables, loudness)
+                            _parse_code(while_code, variables, loudness, timeout - (time.time() - start_time))
+                        except TimeoutError:
+                            # Correct the timeout
+                            raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
                         except _InnerCodeError as e:
                             inner_exception, inner_line_number, inner_line = e.inner_exception, e.line_number, e.line
                             raise _InnerCodeError(inner_exception, inner_line_number + while_line_number + 1, inner_line)
@@ -223,7 +237,7 @@ def _run_all_tests() -> None:
             f.close()
             expected_result = code[-1]
             try:
-                variables = parse_code(code, print_errors=False)
+                variables = parse_code(code, print_errors=False, timeout=3)
             except _InnerCodeError as e:
                 result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
             else:
@@ -246,7 +260,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_code(code, print_errors=True, loudness=0)
+                parse_code(code, print_errors=True, loudness=0, timeout=time_per_file)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)}")
 

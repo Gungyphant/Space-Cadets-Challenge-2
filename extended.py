@@ -17,7 +17,7 @@ def parse_extended_file(filepath: str, *, print_errors: bool = True, loudness: i
     return parse_extended_code(code, print_errors=print_errors, loudness=loudness, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
-def parse_extended_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = True) -> VariableDict:
+def parse_extended_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, timeout: float = float("inf"), discard_underscore_prefixed_variables: bool = True) -> VariableDict:
     """Parses an entire Bare Bones Extended program
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -26,7 +26,9 @@ def parse_extended_code(code: str | list[str], *, print_errors: bool = True, lou
     """
     if isinstance(code, str):
         code = code.splitlines()
-    result = parse_code(_de_extend_code(code), print_errors=print_errors, loudness=loudness)
+    start_time = time.time()
+    code = _de_extend_code(code)
+    result = parse_code(code, print_errors=print_errors, loudness=loudness, timeout=timeout - (time.time() - start_time))
     if result and discard_underscore_prefixed_variables:
         return {k: v for k, v in result.items() if not k.startswith("_")}
     else:
@@ -134,7 +136,7 @@ def _run_all_tests() -> None:
             f.close()
             expected_result = code[-1]
             try:
-                variables = parse_extended_code(code, print_errors=False)
+                variables = parse_extended_code(code, print_errors=False, timeout=3)
             except _InnerCodeError as e:
                 message = e.inner_exception.args[0]
                 result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
@@ -170,7 +172,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_code(de_extended_code, print_errors=True, loudness=0)
+                parse_code(de_extended_code, print_errors=True, loudness=0, timeout=time_per_file)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)} execution")
 
