@@ -20,3 +20,5 @@ For example, if the program should fail with a syntactical error on line 4, the 
 line should read:
 
 ```#error:SyntacticalError@4```
+
+If the error may occur anywhere within the program, the `@{line number}` should be omitted.

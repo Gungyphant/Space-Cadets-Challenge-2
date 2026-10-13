@@ -139,7 +139,10 @@ def _run_all_tests() -> None:
                 variables = parse_extended_code(code, print_errors=False, timeout=3)
             except _InnerCodeError as e:
                 message = e.inner_exception.args[0]
-                result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+                if "@" in expected_result:
+                    result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+                else:
+                    result = f"#error:{type(e.inner_exception).__name__}"
             else:
                 message = None
                 result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
