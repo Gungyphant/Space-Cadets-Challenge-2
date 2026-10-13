@@ -1,0 +1,10 @@
+using maths;
+
+clear X;
+incr X;
+
+clear Y;
+
+A r B = X / Y;
+# ? = 1 / 0
+#error:TimeoutError

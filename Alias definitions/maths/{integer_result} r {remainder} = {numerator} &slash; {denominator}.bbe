@@ -1,0 +1,17 @@
+using maths;
+using comparisons;
+using variables;
+
+#_numerator_copy = numerator;
+_denominator_copy = denominator;
+clear integer_result;
+#clear remainder;
+
+remainder = numerator;
+_remainder_ge_denominator = remainder >= denominator;
+while _remainder_ge_denominator not 0 do;
+    incr integer_result;
+    remainder -= denominator;
+
+    _remainder_ge_denominator = remainder >= denominator;
+end;

@@ -1,0 +1,22 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+A r B = X / Y;
+
+incr X;
+C r D = X / Y;
+
+incr X;
+E r F = X / Y;
+#vars:A=1,B=2,C=2,D=0,E=2,F=1,X=7,Y=3
