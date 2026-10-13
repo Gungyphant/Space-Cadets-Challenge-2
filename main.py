@@ -79,14 +79,23 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
                 variables[variable_name] = 0
 
             else:
-                # The line is invalid for parse_line; determine which error to raise
-                if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;|end;", line):
-                    raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
-                else:
-                    if not line.endswith(";"):
-                        raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                print_match = re.fullmatch(r"print (\w{2,}|[a-zA-Z_]);", line)
+                if print_match:
+                    variable_name = print_match.group(1)
+                    if variable_name not in variables:
+                        raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
                     else:
-                        raise SyntacticalError(f"Unparsable line '{line}'")
+                        print(variables[variable_name])
+
+                else:
+                    # The line is invalid for parse_line; determine which error to raise
+                    if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;|end;", line):
+                        raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
+                    else:
+                        if not line.endswith(";"):
+                            raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                        else:
+                            raise SyntacticalError(f"Unparsable line '{line}'")
 
 
 def begin_repl() -> None:
