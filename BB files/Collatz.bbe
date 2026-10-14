@@ -1,0 +1,38 @@
+using maths;
+using variables;
+using comparisons;
+make number variables up to 10;
+
+clear X;
+incr X;
+incr X;
+while X not 0 do;
+    X_copy = X;
+    # Effectively while X_copy not 1 do
+    decr X_copy;
+    while X_copy not 0 do;
+        incr X_copy;
+        print X_copy;
+
+        X_copy_over_two r remainder = X_copy / _TWO;
+        X_copy_is_even = remainder == _ZERO;
+        X_copy_is_odd = remainder != _ZERO;
+
+        while X_copy_is_even not 0 do;
+            X_copy = X_copy_over_two;
+            clear X_copy_is_even;
+        end;
+
+        while X_copy_is_odd not 0 do;
+            X_copy = X_copy * _THREE;
+            X_copy += _ONE;
+            clear X_copy_is_odd;
+        end;
+
+        decr X_copy;
+    end;
+    print _ONE;
+
+    print;
+    incr X;
+end;
