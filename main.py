@@ -84,21 +84,26 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine | None:
                     return Command.PRINT, variable_name
 
                 else:
-                    while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
-                    if while_match:
-                        variable_name = while_match.group(1)
-                        return Command.WHILE, variable_name
+                    blank_print_match = re.fullmatch(r"print;", line)
+                    if blank_print_match:
+                        return Command.PRINT, ""
 
                     else:
-                        end_match = re.fullmatch(r"end;", line)
-                        if end_match:
-                            return Command.END, ""
+                        while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
+                        if while_match:
+                            variable_name = while_match.group(1)
+                            return Command.WHILE, variable_name
 
-                        # Doesn't match any BB command; raise an error:
-                        elif not line.endswith(";"):
-                            raise SyntacticalError(f"Missing semicolon on line '{line}'")
                         else:
-                            raise SyntacticalError(f"Unparsable line '{line}'")
+                            end_match = re.fullmatch(r"end;", line)
+                            if end_match:
+                                return Command.END, ""
+
+                            # Doesn't match any BB command; raise an error:
+                            elif not line.endswith(";"):
+                                raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                            else:
+                                raise SyntacticalError(f"Unparsable line '{line}'")
 
 
 def _process_program(code: str | list[str]) -> list[ProcessedLine | None]:
@@ -147,10 +152,13 @@ def _parse_line(line: ProcessedLine | None, variables: VariableDict) -> None:
             variables[variable_name] = 0
 
         case Command.PRINT:
-            if variable_name not in variables:
-                raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
+            if variable_name:
+                if variable_name not in variables:
+                    raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
+                else:
+                    print(variables[variable_name])
             else:
-                print(variables[variable_name])
+                print()
 
         case Command.WHILE | Command.END:
             raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
