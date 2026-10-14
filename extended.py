@@ -177,7 +177,10 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
             while time.time() - start_time < time_per_file:
                 parse_code(de_extended_code, print_errors=True, loudness=0, timeout=time_per_file)
                 number += 1
-            print(f"{format_time((time.time() - start_time)/number)} execution")
+            if number > 1:
+                print(f"{format_time((time.time() - start_time)/number)} execution")
+            else:
+                print("timeout on execution")
 
 
 if __name__ == "__main__":
