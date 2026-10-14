@@ -1,0 +1,4 @@
+using comparisons;
+
+_not_result = first_value == second_value;
+result = not _not_result;

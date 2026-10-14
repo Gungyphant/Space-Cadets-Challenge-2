@@ -1,0 +1,16 @@
+using comparisons;
+
+clear X;
+clear Y;
+
+A = X != Y;
+
+incr X;
+
+B = X != Y;
+
+incr Y;
+incr Y;
+
+C = X != Y;
+#vars:A=0,B=1,C=1,X=1,Y=2
