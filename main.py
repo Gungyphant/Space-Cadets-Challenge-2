@@ -2,6 +2,8 @@ import os
 import re
 import time
 import warnings
+from enum import Enum
+from typing import Tuple
 
 from utils import *
 
@@ -40,13 +42,18 @@ class _InnerCodeError(ProgramError):
 
 VariableDict = dict[str, int]  # Custom type hint for variables
 
+class Command(Enum):
+    INCR = 0
+    DECR = 1
+    CLEAR = 2
+    WHILE = 3
+    END = 4
+    PRINT = 5
+ProcessedLine = Tuple[Command, str]  # the string is the variable the command acts on
 
-def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> None:
-    """Parse a line of Bare Bones, updating `variables` accordingly
 
-    Note: only parses single-line statements; while loops are not supported (use parse_code)
-    Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
-    """
+def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine | None:
+    """Convert lines to ProcessedLines"""
     if do_strip:
         line = line.strip()  # Indentation and trailing whitespace is ignored
 
@@ -56,15 +63,79 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     incr_match = re.fullmatch(r"incr (\w{2,}|[a-zA-Z_]);", line)
     if incr_match:
         variable_name = incr_match.group(1)
-        if variable_name not in variables:
-            raise UndefinedVariableError(f"Tried to increment the variable '{variable_name}' prior to it being initialised")
-        else:
-            variables[variable_name] += 1
+        return Command.INCR, variable_name
 
     else:
         decr_match = re.fullmatch(r"decr (\w{2,}|[a-zA-Z_]);", line)
         if decr_match:
             variable_name = decr_match.group(1)
+            return Command.DECR, variable_name
+
+        else:
+            clear_match = re.fullmatch(r"clear (\w{2,}|[a-zA-Z_]);", line)
+            if clear_match:
+                variable_name = clear_match.group(1)
+                return Command.CLEAR, variable_name
+
+            else:
+                print_match = re.fullmatch(r"print (\w{2,}|[a-zA-Z_]);", line)
+                if print_match:
+                    variable_name = print_match.group(1)
+                    return Command.PRINT, variable_name
+
+                else:
+                    while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
+                    if while_match:
+                        variable_name = while_match.group(1)
+                        return Command.WHILE, variable_name
+
+                    else:
+                        end_match = re.fullmatch(r"end;", line)
+                        if end_match:
+                            return Command.END, ""
+
+                        # Doesn't match any BB command; raise an error:
+                        elif not line.endswith(";"):
+                            raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                        else:
+                            raise SyntacticalError(f"Unparsable line '{line}'")
+
+
+def _process_program(code: str | list[str]) -> list[ProcessedLine | None]:
+    result = []
+    if isinstance(code, str):
+        code = code.splitlines()
+    for line_number, line in enumerate(code):
+        try:
+            processed_line = _process_line(line)
+        except ProgramError as e:
+            raise _InnerCodeError(e,line_number + 1, line)
+        # if processed_line is not None:
+        result.append(processed_line)
+    return result
+
+
+def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> None:
+    """Parse a line of Bare Bones, updating `variables` accordingly
+
+    Note: only parses single-line statements; while loops are not supported (use parse_code)
+    Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
+    """
+    _parse_line(_process_line(line, do_strip=do_strip), variables)
+
+
+def _parse_line(line: ProcessedLine | None, variables: VariableDict) -> None:
+    if line is None:
+        return
+    command, variable_name = line
+    match command:
+        case Command.INCR:
+            if variable_name not in variables:
+                raise UndefinedVariableError(f"Tried to increment the variable '{variable_name}' prior to it being initialised")
+            else:
+                variables[variable_name] += 1
+
+        case Command.DECR:
             if variable_name not in variables:
                 raise UndefinedVariableError(f"Tried to decrement the variable '{variable_name}' prior to it being initialised")
             elif variables[variable_name] == 0:
@@ -72,30 +143,20 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
             else:
                 variables[variable_name] -= 1
 
-        else:
-            clear_match = re.fullmatch(r"clear (\w{2,}|[a-zA-Z_]);", line)
-            if clear_match:
-                variable_name = clear_match.group(1)
-                variables[variable_name] = 0
+        case Command.CLEAR:
+            variables[variable_name] = 0
 
+        case Command.PRINT:
+            if variable_name not in variables:
+                raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
             else:
-                print_match = re.fullmatch(r"print (\w{2,}|[a-zA-Z_]);", line)
-                if print_match:
-                    variable_name = print_match.group(1)
-                    if variable_name not in variables:
-                        raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
-                    else:
-                        print(variables[variable_name])
+                print(variables[variable_name])
 
-                else:
-                    # The line is invalid for parse_line; determine which error to raise
-                    if re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;|end;", line):
-                        raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
-                    else:
-                        if not line.endswith(";"):
-                            raise SyntacticalError(f"Missing semicolon on line '{line}'")
-                        else:
-                            raise SyntacticalError(f"Unparsable line '{line}'")
+        case Command.WHILE | Command.END:
+            raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
+
+        case _:
+            raise ValueError(f"Unexpected Command {command}")
 
 
 def begin_repl() -> None:
@@ -132,9 +193,11 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
 
     The `timeout` argument will, if the program has been running for that long, cause an error to be raised before parsing the next line
     """
+    # TODO: revert ProcessedLines to lines when errors occur
     variables = {}
     try:
-        return _parse_code(code, variables, loudness, timeout)
+        processed_code = _process_program(code)
+        return _parse_code(processed_code, variables, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
@@ -150,7 +213,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     return {}
 
 
-def _parse_code(code: str | list[str], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
+def _parse_code(code: list[ProcessedLine | None], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
     """Parses a subsection of a Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the section terminates
@@ -158,8 +221,7 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int, t
     # _parse_code works recursively; each `while` block is passed to a new parse_code each time until (if ever) the loop terminates
     # TODO optimisation: make it non-recursive to reduce function overhead
     # TODO missing feature: currently, BB while loops can only be nested to a depth of 998 (bc they're recursive, 2 less bc the first parse_code and the active parse_line call use 1 each)
-    if isinstance(code, str):
-        code = code.splitlines()
+    # TODO missing feature: make it output the line again when loudness == 2
 
     # if timeout < float("inf"):
     start_time = time.time()
@@ -169,36 +231,35 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int, t
     while_code = []
     while_line_number = -1
     while_depth = 0
-    for line_number, true_line in enumerate(code):
+    for line_number, line in enumerate(code):
+        if line is None: continue
+        command, variable = line
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
         if timeout < float("inf") and time.time() - start_time > timeout:
             raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
-        line = true_line.strip()  # Indentation and trailing whitespace is ignored
-        while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
         if not while_mode:
-            if while_match:
+            if command == Command.WHILE:
                 while_mode = True
-                while_var = while_match.group(1)
+                while_var = variable
                 while_code = []
                 while_line_number = line_number
                 while_depth = 0
             else:
                 try:
-                    parse_line(line, variables, do_strip=False)
+                    _parse_line(line, variables)
                 except ProgramError as e:
-                    raise _InnerCodeError(e, line_number + 1, line)
+                    raise _InnerCodeError(e, line_number + 1, f"{command.name.lower()} {variable};")
                 else:
-                    if loudness >= 2 and line and not line.startswith("#"):
-                        print(true_line.replace("\n", ""), variables)
+                    if loudness >= 2:
+                        print(variables)
 
         else:
-            end_match = re.fullmatch(r"end;", line)
-            if while_match:
+            if command == Command.WHILE:
                 while_depth += 1
-            elif end_match:  # Is an end command
+            elif command == Command.END:  # Is an end command
                 while_depth -= 1
 
-            if end_match and while_depth < 0:
+            if command == Command.END and while_depth < 0:
                 try:
                     while variables[while_var] != 0:
                         try:
@@ -213,7 +274,7 @@ def _parse_code(code: str | list[str], variables: VariableDict, loudness: int, t
                 except KeyError:
                     raise UndefinedVariableError(f"Tried to have a while based on the variable '{while_var}' prior to it being initialised")
             else:
-                while_code.append(true_line)
+                while_code.append(line)
 
     if while_mode:
         # The program terminated without reaching an `end;`
