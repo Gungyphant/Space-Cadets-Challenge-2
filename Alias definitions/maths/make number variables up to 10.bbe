@@ -1,0 +1,24 @@
+using variables;
+
+clear _X;
+_ZERO = _X;
+incr _X;
+_ONE = _X;
+incr _X;
+_TWO = _X;
+incr _X;
+_THREE = _X;
+incr _X;
+_FOUR = _X;
+incr _X;
+_FIVE = _X;
+incr _X;
+_SIX = _X;
+incr _X;
+_SEVEN = _X;
+incr _X;
+_EIGHT = _X;
+incr _X;
+_NINE = _X;
+incr _X;
+_TEN = _X;

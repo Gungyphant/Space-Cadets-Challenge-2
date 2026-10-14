@@ -2,14 +2,14 @@ using maths;
 using comparisons;
 using variables;
 
+make number variables up to 10;
+
+# As the only even prime, 2 would otherwise be ignored
+print _TWO;
 
 clear potential_prime;
 incr potential_prime;
 incr potential_prime;
-# Saving this as a constant for later
-TWO = potential_prime;
-# As the only even prime, 2 would otherwise be ignored
-print potential_prime;
 incr potential_prime;
 
 while potential_prime not 0 do;
@@ -21,7 +21,7 @@ while potential_prime not 0 do;
     incr divisor;
     incr divisor;
 
-    half_potential_prime r _ = potential_prime / TWO;
+    half_potential_prime r _ = potential_prime / _TWO;
 
     # x / 2 ~= sqrt(x) (better than x, while being much faster than properly calculating it)
     divisor_lt_half_potential_prime = divisor < half_potential_prime;
