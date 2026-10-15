@@ -261,7 +261,7 @@ def _parse_code(code: list[ProcessedLine | None], variables: VariableDict, loudn
                     raise _InnerCodeError(e, line_number + 1, f"{command.name.lower()} {variable};")
                 else:
                     if loudness >= 2:
-                        print(variables)
+                        print(f"{command.name.lower()} {variable};", variables)
 
         else:
             if command == Command.WHILE:
@@ -347,6 +347,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
 
 
 if __name__ == "__main__":
-    _run_all_tests()
-    print()
-    _run_all_benchmarks()
+    parse_file("BB files/Testing/01 Counting.bb", loudness=2)
+    # _run_all_tests()
+    # print()
+    # _run_all_benchmarks()
