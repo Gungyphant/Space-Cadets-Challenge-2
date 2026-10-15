@@ -204,7 +204,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
 
     The `timeout` argument will, if the program has been running for that long, cause an error to be raised before parsing the next line
     """
-    # TODO: revert ProcessedLines to lines when errors occur
+    # TODO: revert ProcessedLines to lines when they need to be output
     variables = {}
     try:
         processed_code = _process_program(code)
@@ -348,7 +348,6 @@ def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
 
 
 if __name__ == "__main__":
-    parse_file("BB files/Testing/01 Counting.bb", loudness=2)
-    # _run_all_tests()
-    # print()
-    # _run_all_benchmarks()
+    _run_all_tests()
+    print()
+    _run_all_benchmarks()
