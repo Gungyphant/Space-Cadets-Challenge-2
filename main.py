@@ -2,8 +2,10 @@ import os
 import re
 import time
 import warnings
+from collections.abc import Callable
 from enum import Enum
 from typing import Tuple
+from unittest import result
 
 from utils import *
 
@@ -189,7 +191,7 @@ def begin_repl() -> None:
             except ProgramError as e:
                 print(e)
 
-def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, timeout: float = float("inf")) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
+def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: int = 1, timeout: float = float("inf"), discard_underscore_prefixed_variables: bool = False) -> VariableDict:  # wrapper to allow _parse_code to pass variables to itself without allowing them to be passed to parse_code
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -206,9 +208,10 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     """
     # TODO: revert ProcessedLines to lines when they need to be output
     variables = {}
+    result = {}
     try:
         processed_code = _process_program(code)
-        return _parse_code(processed_code, variables, loudness, timeout)
+        result =  _parse_code(processed_code, variables, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
@@ -221,7 +224,10 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
                 print(f"! {repr(e)} occurred")
         else:
             raise _InnerCodeError(e, -1, "")
-    return {}
+    if result and discard_underscore_prefixed_variables:
+        return {k: v for k, v in result.items() if not k.startswith("_")}
+    else:
+        return result
 
 
 def _parse_code(code: list[ProcessedLine | None], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
@@ -294,7 +300,7 @@ def _parse_code(code: list[ProcessedLine | None], variables: VariableDict, loudn
     return variables
 
 
-def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -> dict[str, int] | None:
+def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = False) -> dict[str, int] | None:
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
@@ -306,43 +312,54 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -
     f = open(filepath)
     code = f.readlines()
     f.close()
-    return parse_code(code, print_errors=print_errors, loudness=loudness)
+    return parse_code(code, print_errors=print_errors, loudness=loudness, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
-def _run_all_tests() -> None:
+# def _run_all_tests(
+#         program_executor: Callable[Concatenate[list[str], ...], VariableDict] = parse_code,
+#         kwargs: dict[str, Any] = {"print_errors": False, "timeout": 3},
+# ) -> None:
+def _run_all_tests(program_executor: Callable[list[str], VariableDict] = parse_code) -> None:
     """Runs every .bb file in 'BB files/Testing' using parse_code"""
-    for test_file in os.listdir("BB files/Testing"):
+    for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
-            f = open(f"BB files/Testing/{test_file}")
+            f = open(f"BB files/De-extended Testing/{test_file}")
             code = f.readlines()
             f.close()
             expected_result = code[-1]
             try:
-                variables = parse_code(code, print_errors=False, timeout=3)
+                variables = program_executor(code, print_errors=False, timeout=3, discard_underscore_prefixed_variables=True)
             except _InnerCodeError as e:
-                result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+                message = e.inner_exception.args[0]
+                if "@" in expected_result:
+                    result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+                else:
+                    result = f"#error:{type(e.inner_exception).__name__}"
             else:
+                message = None
                 result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
 
             if result == expected_result:
                 print("Passed")
             else:
+                if message:
+                    result += " " + message
                 print(f"Failed. Got {result}")
 
 
-def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
+def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[list[str], VariableDict] = parse_code) -> None:
     """Times every .bb file in 'BB files/Testing' using parse_file"""
-    for test_file in os.listdir("BB files/Testing"):
+    for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
-            f = open(f"BB files/Testing/{test_file}")
+            f = open(f"BB files/De-extended Testing/{test_file}")
             code = f.readlines()
             f.close()
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                parse_code(code, print_errors=True, loudness=0, timeout=time_per_file)
+                program_executor(code, print_errors=True, loudness=0, timeout=time_per_file, discard_underscore_prefixed_variables=True)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)}")
 

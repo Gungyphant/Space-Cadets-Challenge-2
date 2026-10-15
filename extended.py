@@ -28,11 +28,7 @@ def parse_extended_code(code: str | list[str], *, print_errors: bool = True, lou
         code = code.splitlines()
     start_time = time.time()
     code = _de_extend_code(code)
-    result = parse_code(code, print_errors=print_errors, loudness=loudness, timeout=timeout - (time.time() - start_time))
-    if result and discard_underscore_prefixed_variables:
-        return {k: v for k, v in result.items() if not k.startswith("_")}
-    else:
-        return result
+    return parse_code(code, print_errors=print_errors, loudness=loudness, timeout=timeout - (time.time() - start_time), discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
 def compile_extended_file(extended_filepath: str, regular_filepath: str | None = None) -> None:
