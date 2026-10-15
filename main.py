@@ -192,10 +192,12 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     """Parses an entire Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the program terminates
+
     The `print_errors` argument determines if parse_code will print errors instead of raising them
+
     The `loudness` argument determines how much information should be printed:
 
-    - 0 -- No printing at all (useful for testing and benchmarking)
+    - 0 -- No printing at all
     - 1 (default) -- Print any errors that occur
     - 2 -- 1, and print the state of the program after each line
 
@@ -295,6 +297,7 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1) -
     """Parses the Bare Bones program located at filepath
 
     :returns: A dictionary of the final values of the variables when the program terminates
+
     The `print_errors` and `loudness` arguments are passed directly to parse_code; see its documentation for details
     """
     if filepath.endswith(".bbe"):
