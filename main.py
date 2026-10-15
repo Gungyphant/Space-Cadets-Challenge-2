@@ -124,6 +124,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     """Parse a line of Bare Bones, updating `variables` accordingly
 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
+
     Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
     """
     _parse_line(_process_line(line, do_strip=do_strip), variables)
