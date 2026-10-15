@@ -319,8 +319,10 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, d
 #         program_executor: Callable[Concatenate[list[str], ...], VariableDict] = parse_code,
 #         kwargs: dict[str, Any] = {"print_errors": False, "timeout": 3},
 # ) -> None:
-def _run_all_tests(program_executor: Callable[list[str], VariableDict] = parse_code) -> None:
+def _run_all_tests(program_executor: Callable[[list[str], ...], VariableDict] = parse_code, kwargs=None) -> None:
     """Runs every .bb file in 'BB files/Testing' using parse_code"""
+    if kwargs is None:
+        kwargs = {"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}
     for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
@@ -329,7 +331,7 @@ def _run_all_tests(program_executor: Callable[list[str], VariableDict] = parse_c
             f.close()
             expected_result = code[-1]
             try:
-                variables = program_executor(code, print_errors=False, timeout=3, discard_underscore_prefixed_variables=True)
+                variables = program_executor(code, **kwargs)
             except _InnerCodeError as e:
                 message = e.inner_exception.args[0]
                 if "@" in expected_result:
@@ -348,8 +350,10 @@ def _run_all_tests(program_executor: Callable[list[str], VariableDict] = parse_c
                 print(f"Failed. Got {result}")
 
 
-def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[list[str], VariableDict] = parse_code) -> None:
+def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[[list[str], ...], VariableDict] = parse_code, kwargs=None) -> None:
     """Times every .bb file in 'BB files/Testing' using parse_file"""
+    if kwargs is None:
+        kwargs = {"print_errors": True, "loudness": 0, "timeout": time_per_file, "discard_underscore_prefixed_variables": True}
     for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
@@ -359,7 +363,7 @@ def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[l
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
-                program_executor(code, print_errors=True, loudness=0, timeout=time_per_file, discard_underscore_prefixed_variables=True)
+                program_executor(code, **kwargs)
                 number += 1
             print(f"{format_time((time.time() - start_time)/number)}")
 
