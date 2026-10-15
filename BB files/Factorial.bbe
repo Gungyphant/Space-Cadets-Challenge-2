@@ -6,6 +6,7 @@ incr X;
 incr X;
 incr X;
 incr X;
+incr X;
 
 clear result;
 incr result;
