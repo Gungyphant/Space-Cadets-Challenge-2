@@ -51,10 +51,10 @@ class Command(Enum):
     WHILE = 3
     END = 4
     PRINT = 5
-ProcessedLine = Tuple[Command, str]  # the string is the variable the command acts on
+ProcessedLine = Tuple[Command, str] | None  # the string is the variable the command acts on (None represents a blank line)
 
 
-def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine | None:
+def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
     """Convert lines to ProcessedLines"""
     if do_strip:
         line = line.strip()  # Indentation and trailing whitespace is ignored
@@ -108,7 +108,7 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine | None:
                                 raise SyntacticalError(f"Unparsable line '{line}'")
 
 
-def _process_program(code: str | list[str]) -> list[ProcessedLine | None]:
+def _process_program(code: str | list[str]) -> list[ProcessedLine]:
     result = []
     if isinstance(code, str):
         code = code.splitlines()
@@ -132,7 +132,7 @@ def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> 
     _parse_line(_process_line(line, do_strip=do_strip), variables)
 
 
-def _parse_line(line: ProcessedLine | None, variables: VariableDict) -> None:
+def _parse_line(line: ProcessedLine, variables: VariableDict) -> None:
     if line is None:
         return
     command, variable_name = line
@@ -230,7 +230,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
         return result
 
 
-def _parse_code(code: list[ProcessedLine | None], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
+def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
     """Parses a subsection of a Bare Bones program
 
     :returns: A dictionary of the final values of the variables when the section terminates
