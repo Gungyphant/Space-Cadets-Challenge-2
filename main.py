@@ -319,17 +319,19 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, d
 #         program_executor: Callable[Concatenate[list[str], ...], VariableDict] = parse_code,
 #         kwargs: dict[str, Any] = {"print_errors": False, "timeout": 3},
 # ) -> None:
-def _run_all_tests(program_executor: Callable[[list[str], ...], VariableDict] = parse_code, kwargs=None) -> None:
+def _run_all_tests(program_executor: Callable[[list[str], ...], VariableDict], kwargs=None, skip_timeouts: bool = False) -> None:
     """Runs every .bb file in 'BB files/Testing' using parse_code"""
     if kwargs is None:
-        kwargs = {"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}
+        kwargs = {}
     for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
-            print(test_file, end=": ")
             f = open(f"BB files/De-extended Testing/{test_file}")
             code = f.readlines()
             f.close()
             expected_result = code[-1]
+            if skip_timeouts and expected_result.startswith("#error:TimeoutError"):
+                continue
+            print(test_file, end=": ")
             try:
                 variables = program_executor(code, **kwargs)
             except _InnerCodeError as e:
@@ -350,16 +352,18 @@ def _run_all_tests(program_executor: Callable[[list[str], ...], VariableDict] = 
                 print(f"Failed. Got {result}")
 
 
-def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[[list[str], ...], VariableDict] = parse_code, kwargs=None) -> None:
+def _run_all_benchmarks(program_executor: Callable[[list[str], ...], VariableDict], kwargs=None, time_per_file: float = 1.0, skip_timeouts: bool = False) -> None:
     """Times every .bb file in 'BB files/Testing' using parse_file"""
     if kwargs is None:
-        kwargs = {"print_errors": True, "loudness": 0, "timeout": time_per_file, "discard_underscore_prefixed_variables": True}
+        kwargs = {}
     for test_file in os.listdir("BB files/De-extended Testing"):
         if test_file.endswith(".bb"):
             print(test_file, end=": ")
             f = open(f"BB files/De-extended Testing/{test_file}")
             code = f.readlines()
             f.close()
+            if skip_timeouts and code[-1].startswith("#error:TimeoutError"):
+                continue
             start_time = time.time()
             number = 0
             while time.time() - start_time < time_per_file:
@@ -369,6 +373,6 @@ def _run_all_benchmarks(time_per_file: float = 1.0, program_executor: Callable[[
 
 
 if __name__ == "__main__":
-    _run_all_tests()
+    _run_all_tests(parse_code, {"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True})
     print()
-    _run_all_benchmarks()
+    _run_all_benchmarks(parse_code, {"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True})
