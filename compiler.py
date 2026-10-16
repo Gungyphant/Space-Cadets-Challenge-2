@@ -95,9 +95,9 @@ def execute_code(code: str | list[str], *, discard_underscore_prefixed_variables
     #         python_code = _compile_code(_process_program(code))
     #         exec(python_code)
     #     except ProgramError as e:
-    #         line_no_line = traceback.format_exc().splitlines()[-2]
-    #         line_no = int(line_no_line[24:-13])  # '  File "<string>", line XYZ, in <module>'
-    #         raise _InnerCodeError(e, line_no, python_code.splitlines()[line_no])
+    #         line_number_line = traceback.format_exc().splitlines()[-2]
+    #         line_number = int(line_number_line[24:-13])  # '  File "<string>", line XYZ, in <module>'
+    #         raise _InnerCodeError(e, line_number, python_code.splitlines()[line_number])
     #
     #     result = {k: v for k, v in locals().items() if k not in ["python_code", "code", "discard_underscore_prefixed_variables"]}
     #     if result and discard_underscore_prefixed_variables:
@@ -124,24 +124,36 @@ def execute_code(code: str | list[str], *, discard_underscore_prefixed_variables
     #         raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
     #     else:
     #         return return_dict[0]
-    try:
-        python_code = _compile_code(_process_program(code))
-    except SyntacticalError:
-        pass
+    # try:
+    #     python_code = _compile_code(_process_program(code))
+    # except _InnerCodeError as e:
+    #     inner_exception, line_number, line = e
+    #     if not isinstance(inner_exception, SyntacticalError): raise
 
+
+    result = {}
     try:
-        exec(python_code)
-    except ProgramError as e:
-        line_no_line = traceback.format_exc().splitlines()[-2]  # '  File "<string>", line XYZ, in <module>'
-        line_no = int(line_no_line[24:-13])
-        line = python_code.splitlines()[line_no]
+        exec(_compile_code(_process_program(code)), globals=globals(), locals=result)
+    except _InnerCodeError as e:
+        inner_exception, line_number, line = e.inner_exception, e.line_number, e.line
         if print_errors:
             if loudness >= 1:
-                print(f"! Error on line {line_no}: {line}\n!     {repr(e)}")
+                print(f"! Error on line {line_number}: {line}\n!     {repr(inner_exception)}")
         else:
-            raise _InnerCodeError(e, line_no, line)
+            raise e
+    except ProgramError as e:
+        line_number_line = traceback.format_exc().splitlines()[-2]  # '  File "<string>", line XYZ, in <module>'
+        line_number = int(line_number_line[24:-13])
+        if isinstance(code, str):
+            code = code.splitlines()
+        line = code[line_number]
+        if print_errors:
+            if loudness >= 1:
+                print(f"! Error on line {line_number}: {line}\n!     {repr(e)}")
+        else:
+            raise _InnerCodeError(e, line_number, line)
 
-    result = {k: v for k, v in locals().items() if k not in ["python_code", "code", "discard_underscore_prefixed_variables", "print_errors", "loudness"]}
+    # result = {k: v for k, v in locals().items() if k not in ["python_code", "code", "discard_underscore_prefixed_variables", "print_errors", "loudness"]}
     if result and discard_underscore_prefixed_variables:
         return {k: v for k, v in result.items() if not k.startswith("_")}
     else:
@@ -159,6 +171,8 @@ def execute_file(filepath: str, *, discard_underscore_prefixed_variables: bool =
 
 
 if __name__ == "__main__":
-    _run_all_tests(execute_code, kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True)
-    print()
-    _run_all_benchmarks(execute_code, skip_timeouts=True, kwargs={"loudness": 0})
+    for _ in range(10000):
+        execute_file("BB files/Testing/01 Counting.bb")
+    # _run_all_tests(execute_code, kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True)
+    # print()
+    # _run_all_benchmarks(execute_code, skip_timeouts=True, kwargs={"loudness": 0})
