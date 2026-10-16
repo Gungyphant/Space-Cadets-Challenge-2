@@ -2,17 +2,23 @@ import os
 import pathlib
 import sys
 import traceback
+from datetime import time
+from types import CodeType
+
+import marshal
+
 # import multiprocessing
 
 # import dill
 
-from main import ProcessedLine, Command, VariableDict, _process_program, _run_all_tests, _run_all_benchmarks
+from main import ProcessedLine, Command, VariableDict, _process_program
+from testing_tools import run_all_tests, run_all_benchmarks
 from main import ProgramError, UndefinedVariableError, NegativeError, _InnerCodeError, SyntacticalError
 # from utils import format_time
 
 
-def _compile_code(code: list[ProcessedLine]) -> str:
-    """Converts BB code to Python code"""
+def _compile_code(code: list[ProcessedLine]) -> CodeType:
+    """Converts BB code to compiled Python code"""
     python_code = []
     depth = 0
     for line in code:
@@ -44,28 +50,28 @@ def _compile_code(code: list[ProcessedLine]) -> str:
             case _:
                 raise ValueError(f"Unexpected Command {command}")
 
-    return "\n".join(python_code)
+    return compile("\n".join(python_code), "<Compiled BB code>", "exec")
 
 
-def compile_program_to_file(extended_filepath: str, regular_filepath: str | None = None) -> None:
-    """Compiles a Bare Bones program to a Python program
+def compile_program_to_file(barebones_filepath: str, python_filepath: str | None = None) -> None:
+    """Compiles a Bare Bones program to a compiled Python program
 
-    The second argument, if provided, is the destination of the compiled program; otherwise, it will be in the same location as the BB program with the extension .py
+    The second argument, if provided, is the destination of the compiled program; otherwise, it will be in the same location as the BB program with the extension .pyc
     """
-    if regular_filepath is None:
-        extended_filepath_directory, extended_filepath_full_name = os.path.split(extended_filepath)
+    if python_filepath is None:
+        extended_filepath_directory, extended_filepath_full_name = os.path.split(barebones_filepath)
         extended_filepath_name = pathlib.Path(extended_filepath_full_name).stem
-        regular_filepath = os.path.join(extended_filepath_directory, f"{extended_filepath_name} de-extended.bb")
+        python_filepath = os.path.join(extended_filepath_directory, f"{extended_filepath_name}.pyc")
 
-    f = open(extended_filepath)
+    f = open(barebones_filepath)
     code = f.readlines()
     f.close()
 
     new_code = _compile_code(_process_program(code))
 
-    pathlib.Path(regular_filepath).parent.mkdir(parents=True, exist_ok=True)
-    f = open(regular_filepath, "w")
-    f.write("\n".join(new_code))
+    pathlib.Path(python_filepath).parent.mkdir(parents=True, exist_ok=True)
+    f = open(python_filepath, "wb")
+    marshal.dump(new_code, f)
     f.close()
 
 
@@ -130,10 +136,28 @@ def execute_code(code: str | list[str], *, discard_underscore_prefixed_variables
     #     inner_exception, line_number, line = e
     #     if not isinstance(inner_exception, SyntacticalError): raise
 
+    try:
+        compiled_code = _compile_code(_process_program(code))
+    except _InnerCodeError as e:
+        inner_exception, line_number, line = e.inner_exception, e.line_number, e.line
+        if print_errors:
+            if loudness >= 1:
+                print(f"! Error on line {line_number}: {line}\n!     {repr(inner_exception)}")
+            return {}
+        else:
+            raise e
 
+    result = _execute_compiled_code(compiled_code, print_errors=print_errors, loudness=loudness)
+    if result and discard_underscore_prefixed_variables:
+        return {k: v for k, v in result.items() if not k.startswith("_")}
+    else:
+        return result
+
+
+def _execute_compiled_code(code: CodeType, *, print_errors: bool = True, loudness: int = 1) -> VariableDict:
     result = {}
     try:
-        exec(_compile_code(_process_program(code)), globals=globals(), locals=result)
+        exec(code, globals=globals(), locals=result)
     except _InnerCodeError as e:
         inner_exception, line_number, line = e.inner_exception, e.line_number, e.line
         if print_errors:
@@ -154,10 +178,7 @@ def execute_code(code: str | list[str], *, discard_underscore_prefixed_variables
             raise _InnerCodeError(e, line_number, line)
 
     # result = {k: v for k, v in locals().items() if k not in ["python_code", "code", "discard_underscore_prefixed_variables", "print_errors", "loudness"]}
-    if result and discard_underscore_prefixed_variables:
-        return {k: v for k, v in result.items() if not k.startswith("_")}
-    else:
-        return result
+    return result
 
 
 def execute_file(filepath: str, *, discard_underscore_prefixed_variables: bool = False) -> VariableDict:
@@ -170,9 +191,29 @@ def execute_file(filepath: str, *, discard_underscore_prefixed_variables: bool =
     return execute_code(file, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
+def execute_compiled_file(filepath: str) -> VariableDict:
+    f = open(filepath, "rb")
+    code = marshal.load(f)
+    f.close()
+    return _execute_compiled_code(code)
+
+
 if __name__ == "__main__":
-    for _ in range(10000):
+    import time
+    start_time = time.time()
+    for _ in range(1000):
         execute_file("BB files/Testing/01 Counting.bb")
+    print(time.time() - start_time)
+
+    f = open("BB files/Testing/01 Counting.bb")
+    file = f.read()
+    f.close()
+    compiled_code = _compile_code(_process_program(file))
+    start_time = time.time()
+    for _ in range(1_000_000):
+        _execute_compiled_code(compiled_code)
+    print(time.time() - start_time)
+
     # _run_all_tests(execute_code, kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True)
     # print()
     # _run_all_benchmarks(execute_code, skip_timeouts=True, kwargs={"loudness": 0})
