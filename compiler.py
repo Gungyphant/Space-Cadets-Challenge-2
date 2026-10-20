@@ -149,7 +149,13 @@ def execute_code(code: str | list[str], *, discard_underscore_prefixed_variables
         else:
             raise e
 
-    result = _execute_compiled_code(compiled_code, print_errors=print_errors, loudness=loudness)
+    try:
+        result = _execute_compiled_code(compiled_code, print_errors=print_errors, loudness=loudness)
+    except _InnerCodeError as e:
+        inner_exception = e.inner_exception
+        line_number = e.line_number
+        line = code[line_number]
+        raise _InnerCodeError(inner_exception, line_number, line)
     if result and discard_underscore_prefixed_variables:
         return {k: v for k, v in result.items() if not k.startswith("_")}
     else:
@@ -169,10 +175,8 @@ def _execute_compiled_code(code: CodeType, *, print_errors: bool = True, loudnes
             raise e
     except ProgramError as e:
         line_number_line = traceback.format_exc().splitlines()[-2]  # '  File "<string>", line XYZ, in <module>'
-        if isinstance(code, str):
-            code = code.splitlines()
-        line = code[line_number]
         line_number = int(line_number_line[34:-13])
+        line = None  # Cannot determine lines of code from CodeType
         if print_errors:
             if loudness >= 1:
                 print(f"! Error on line {line_number}: {line}\n!     {repr(e)}")
