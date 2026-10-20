@@ -2,7 +2,8 @@ import os
 import pathlib
 import re
 from extended import _de_extend_code
-from main import parse_code, SyntacticalError, _InnerCodeError, ProgramError
+from main import parse_code
+from errors import ProgramError, SyntacticalError, _InnerCodeError
 import html
 
 aliases_location = input("Directory to generate .bbas from relative to ./Alias definitions: ")

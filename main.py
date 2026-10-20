@@ -1,46 +1,11 @@
-import os
 import re
 import time
 import warnings
-from collections.abc import Callable
 from enum import Enum
 from typing import Tuple
-from unittest import result
 
+from errors import ProgramError, UndefinedVariableError, NegativeError, SyntacticalError, MultilineExpressionError, TimeoutError, _InnerCodeError
 from utils import *
-
-
-class ProgramError(Exception):
-    """General class for all errors with user code (as opposed to bugs in this program)"""
-
-
-class UndefinedVariableError(ProgramError):
-    """This error occurs when trying to increment or decrement a variable that has yet to be declared via clear"""
-
-
-class NegativeError(ProgramError):
-    """This error occurs when trying to make a variable negative"""
-
-
-class SyntacticalError(ProgramError):  # should really be called SyntaxError but that'd be confusing
-    """This error occurs when trying to parse a line that's not of a correct format, or attempts to call a non-existent function"""
-
-
-class MultilineExpressionError(ProgramError):
-    """This error occurs when trying to execute a multiline statement somewhere that only supports single-line statements"""
-
-
-class TimeoutError(ProgramError):
-    """This error occurs when a program takes longer than the timeout"""
-
-
-class _InnerCodeError(ProgramError):
-    """This error occurs when _parse_lines re-raises an exception from a program, with additional information"""
-    def __init__(self, inner_exception: ProgramError, line_number: int, line: str):
-        self.inner_exception: ProgramError = inner_exception
-        self.line_number: int = line_number
-        self.line: str = line
-
 
 VariableDict = dict[str, int]  # Custom type hint for variables
 
@@ -315,64 +280,11 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, d
     return parse_code(code, print_errors=print_errors, loudness=loudness, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
-# def _run_all_tests(
-#         program_executor: Callable[Concatenate[list[str], ...], VariableDict] = parse_code,
-#         kwargs: dict[str, Any] = {"print_errors": False, "timeout": 3},
-# ) -> None:
-def _run_all_tests(program_executor: Callable[[list[str], ...], VariableDict], kwargs=None, skip_timeouts: bool = False) -> None:
-    """Runs every .bb file in 'BB files/Testing' using parse_code"""
-    if kwargs is None:
-        kwargs = {}
-    for test_file in os.listdir("BB files/De-extended Testing"):
-        if test_file.endswith(".bb"):
-            f = open(f"BB files/De-extended Testing/{test_file}")
-            code = f.readlines()
-            f.close()
-            expected_result = code[-1]
-            if skip_timeouts and expected_result.startswith("#error:TimeoutError"):
-                continue
-            print(test_file, end=": ")
-            try:
-                variables = program_executor(code, **kwargs)
-            except _InnerCodeError as e:
-                message = e.inner_exception.args[0]
-                if "@" in expected_result:
-                    result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
-                else:
-                    result = f"#error:{type(e.inner_exception).__name__}"
-            else:
-                message = None
-                result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
-
-            if result == expected_result:
-                print("Passed")
-            else:
-                if message:
-                    result += " " + message
-                print(f"Failed. Got {result}")
-
-
-def _run_all_benchmarks(program_executor: Callable[[list[str], ...], VariableDict], kwargs=None, time_per_file: float = 1.0, skip_timeouts: bool = False) -> None:
-    """Times every .bb file in 'BB files/Testing' using parse_file"""
-    if kwargs is None:
-        kwargs = {}
-    for test_file in os.listdir("BB files/De-extended Testing"):
-        if test_file.endswith(".bb"):
-            print(test_file, end=": ")
-            f = open(f"BB files/De-extended Testing/{test_file}")
-            code = f.readlines()
-            f.close()
-            if skip_timeouts and code[-1].startswith("#error:TimeoutError"):
-                continue
-            start_time = time.time()
-            number = 0
-            while time.time() - start_time < time_per_file:
-                program_executor(code, **kwargs)
-                number += 1
-            print(f"{format_time((time.time() - start_time)/number)}")
-
+def main():
+    from testing_tools import run_all_tests, run_all_benchmarks
+    run_all_tests(parse_code, program_executor_kwargs={"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}, test_file_location="BB files/De-extended Testing")
+    print()
+    run_all_benchmarks(parse_code, program_executor_kwargs={"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True}, test_file_location="BB files/De-extended Testing")
 
 if __name__ == "__main__":
-    _run_all_tests(parse_code, {"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True})
-    print()
-    _run_all_benchmarks(parse_code, {"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True})
+    main()

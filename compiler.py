@@ -13,7 +13,9 @@ import marshal
 
 from main import ProcessedLine, Command, VariableDict, _process_program
 from testing_tools import run_all_tests, run_all_benchmarks
-from main import ProgramError, UndefinedVariableError, NegativeError, _InnerCodeError, SyntacticalError
+from errors import ProgramError, UndefinedVariableError, NegativeError, SyntacticalError, _InnerCodeError
+
+
 # from utils import format_time
 
 
@@ -199,21 +201,21 @@ def execute_compiled_file(filepath: str) -> VariableDict:
 
 
 if __name__ == "__main__":
-    import time
-    start_time = time.time()
-    for _ in range(1000):
-        execute_file("BB files/Testing/01 Counting.bb")
-    print(time.time() - start_time)
+    # import time
+    # start_time = time.time()
+    # for _ in range(1000):
+    #     execute_file("BB files/Testing/01 Counting.bb")
+    # print(time.time() - start_time)
+    #
+    # f = open("BB files/Testing/01 Counting.bb")
+    # file = f.read()
+    # f.close()
+    # compiled_code = _compile_code(_process_program(file))
+    # start_time = time.time()
+    # for _ in range(1_000_000):
+    #     _execute_compiled_code(compiled_code)
+    # print(time.time() - start_time)
 
-    f = open("BB files/Testing/01 Counting.bb")
-    file = f.read()
-    f.close()
-    compiled_code = _compile_code(_process_program(file))
-    start_time = time.time()
-    for _ in range(1_000_000):
-        _execute_compiled_code(compiled_code)
-    print(time.time() - start_time)
-
-    # _run_all_tests(execute_code, kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True)
-    # print()
-    # _run_all_benchmarks(execute_code, skip_timeouts=True, kwargs={"loudness": 0})
+    run_all_tests(execute_code, program_executor_kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True, test_file_location="BB files/De-extended Testing")
+    print()
+    run_all_benchmarks(_execute_compiled_code, lambda x: _compile_code(_process_program(x)), skip_timeouts=True, program_executor_kwargs={"loudness": 0}, test_file_location="BB files/De-extended Testing")

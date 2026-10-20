@@ -1,8 +1,9 @@
 import json
+import os
 import pathlib
 
 from main import *
-from main import _InnerCodeError
+from testing_tools import run_all_tests, run_all_benchmarks
 
 
 def parse_extended_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = True) -> VariableDict:
@@ -122,66 +123,66 @@ def _clean_up_code(code: str | list[str]) -> list[str]:
     return indented_code
 
 
-def _run_all_tests() -> None:
-    """Runs every .bb or .bbe file in 'BB files/Testing' using parse_extended_code"""
-    for test_file in os.listdir("BB files/Testing"):
-        if test_file.endswith(".bb") or test_file.endswith(".bbe"):
-            print(test_file, end=": ")
-            f = open(f"BB files/Testing/{test_file}")
-            code = f.readlines()
-            f.close()
-            expected_result = code[-1]
-            try:
-                variables = parse_extended_code(code, print_errors=False, timeout=3)
-            except _InnerCodeError as e:
-                message = e.inner_exception.args[0]
-                if "@" in expected_result:
-                    result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
-                else:
-                    result = f"#error:{type(e.inner_exception).__name__}"
-            else:
-                message = None
-                result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
-
-            if result == expected_result:
-                print("Passed")
-            else:
-                if message:
-                    result += " " + message
-                print(f"Failed. Got {result}")
-
-
-def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
-    """Times every .bb or .bbe file in 'BB files/Testing' using parse_extended_code"""
-    for test_file in os.listdir("BB files/Testing"):
-        if test_file.endswith(".bb") or test_file.endswith(".bbe"):
-            print(test_file, end=": ")
-            f = open(f"BB files/Testing/{test_file}")
-            code = f.readlines()
-            f.close()
-
-            start_time = time.time()
-            number = 0
-            while time.time() - start_time < time_per_file:
-                _de_extend_code(code)
-                number += 1
-            print(f"{format_time((time.time() - start_time)/number)} compilation, ", end="")
-
-            de_extended_code = _de_extend_code(code)
-            start_time = time.time()
-            number = 0
-            while time.time() - start_time < time_per_file:
-                parse_code(de_extended_code, print_errors=True, loudness=0, timeout=time_per_file)
-                number += 1
-            if number > 1:
-                print(f"{format_time((time.time() - start_time)/number)} execution")
-            else:
-                print("timeout on execution")
+# def _run_all_tests() -> None:
+#     """Runs every .bb or .bbe file in 'BB files/Testing' using parse_extended_code"""
+#     for test_file in os.listdir("BB files/Testing"):
+#         if test_file.endswith(".bb") or test_file.endswith(".bbe"):
+#             print(test_file, end=": ")
+#             f = open(f"BB files/Testing/{test_file}")
+#             code = f.readlines()
+#             f.close()
+#             expected_result = code[-1]
+#             try:
+#                 variables = parse_extended_code(code, print_errors=False, timeout=3)
+#             except _InnerCodeError as e:
+#                 message = e.inner_exception.args[0]
+#                 if "@" in expected_result:
+#                     result = f"#error:{type(e.inner_exception).__name__}@{e.line_number}"
+#                 else:
+#                     result = f"#error:{type(e.inner_exception).__name__}"
+#             else:
+#                 message = None
+#                 result = f"#vars:{",".join(f"{var}={val}" for var, val in sorted(variables.items(), key=lambda x: x[0]))}"
+#
+#             if result == expected_result:
+#                 print("Passed")
+#             else:
+#                 if message:
+#                     result += " " + message
+#                 print(f"Failed. Got {result}")
+#
+#
+# def _run_all_benchmarks(time_per_file: float = 1.0) -> None:
+#     """Times every .bb or .bbe file in 'BB files/Testing' using parse_extended_code"""
+#     for test_file in os.listdir("BB files/Testing"):
+#         if test_file.endswith(".bb") or test_file.endswith(".bbe"):
+#             print(test_file, end=": ")
+#             f = open(f"BB files/Testing/{test_file}")
+#             code = f.readlines()
+#             f.close()
+#
+#             start_time = time.time()
+#             number = 0
+#             while time.time() - start_time < time_per_file:
+#                 _de_extend_code(code)
+#                 number += 1
+#             print(f"{format_time((time.time() - start_time)/number)} compilation, ", end="")
+#
+#             de_extended_code = _de_extend_code(code)
+#             start_time = time.time()
+#             number = 0
+#             while time.time() - start_time < time_per_file:
+#                 parse_code(de_extended_code, print_errors=True, loudness=0, timeout=time_per_file)
+#                 number += 1
+#             if number > 1:
+#                 print(f"{format_time((time.time() - start_time)/number)} execution")
+#             else:
+#                 print("timeout on execution")
 
 
 if __name__ == "__main__":
-    _run_all_tests()
+    run_all_tests(program_executor=parse_code, program_executor_kwargs={"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}, program_compiler=_de_extend_code, valid_extensions={".bb", ".bbe"})
     print()
-    _run_all_benchmarks()
+    run_all_benchmarks(program_executor=parse_code, program_executor_kwargs={"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True}, program_compiler=_de_extend_code, valid_extensions={".bb", ".bbe"})
     print()
-    print(parse_extended_file("BB files/Factorial.bbe"))
+    # print(parse_extended_file("BB files/Factorial.bbe"))
