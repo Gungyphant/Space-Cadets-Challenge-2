@@ -81,7 +81,7 @@ def _process_program(code: str | list[str]) -> list[ProcessedLine]:
         try:
             processed_line = _process_line(line)
         except ProgramError as e:
-            raise _InnerCodeError(e,line_number + 1, line)
+            raise _InnerCodeError(e, line_number + 1, line)
         # if processed_line is not None:
         result.append(processed_line)
     return result
@@ -176,7 +176,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     result = {}
     try:
         processed_code = _process_program(code)
-        result =  _parse_code(processed_code, variables, loudness, timeout)
+        result = _parse_code(processed_code, variables, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
