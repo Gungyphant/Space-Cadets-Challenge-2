@@ -180,9 +180,12 @@ def _clean_up_code(code: str | list[str]) -> list[str]:
 #                 print("timeout on execution")
 
 
-if __name__ == "__main__":
+def _do_test():
     run_all_tests(program_executor=parse_code, program_executor_kwargs={"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}, program_compiler=_de_extend_code, valid_extensions={".bb", ".bbe"})
     print()
     run_all_benchmarks(program_executor=parse_code, program_executor_kwargs={"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True}, program_compiler=_de_extend_code, valid_extensions={".bb", ".bbe"})
     print()
     # print(parse_extended_file("BB files/Factorial.bbe"))
+
+if __name__ == "__main__":
+    _do_test()

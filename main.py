@@ -280,11 +280,11 @@ def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, d
     return parse_code(code, print_errors=print_errors, loudness=loudness, discard_underscore_prefixed_variables=discard_underscore_prefixed_variables)
 
 
-def main():
+def _do_test():
     from testing_tools import run_all_tests, run_all_benchmarks
     run_all_tests(parse_code, program_executor_kwargs={"print_errors": False, "timeout": 3, "discard_underscore_prefixed_variables": True}, test_file_location="BB files/De-extended Testing")
     print()
     run_all_benchmarks(parse_code, program_executor_kwargs={"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True}, test_file_location="BB files/De-extended Testing")
 
 if __name__ == "__main__":
-    main()
+    _do_test()

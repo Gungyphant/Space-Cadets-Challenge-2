@@ -209,3 +209,38 @@ def _yes_compile_run_all_benchmarks(program_executor: Callable[[T], VariableDict
                     print(f"{repr(e.inner_exception)} on line {e.line_number}: {e.line}")
                 else:
                     print(repr(e))
+
+
+def _test_everything():
+    # Compile aliases:
+    from AliasGenerator import generate_aliases
+    generate_aliases("")
+
+    # Convert BBE tests to BB:
+    import shutil
+    from extended import compile_extended_file
+    for file in os.listdir("BB files/Testing"):
+        if file.endswith(".bb"):
+            shutil.copy(f"BB files/Testing/{file}", f"BB files/De-extended Testing/{file}")
+        elif file.endswith(".bbe"):
+            try:
+                compile_extended_file(f"BB files/Testing/{file}", f"BB files/De-extended Testing/{file[:-1]}")
+            except:
+                pass
+
+    # Run the tests:
+    from main import _do_test
+    print("main:")
+    _do_test()
+
+    from extended import _do_test
+    print("\n\nextended:")
+    _do_test()
+
+    from compiler import _do_test
+    print("\n\ncompiler:")
+    _do_test()
+
+
+if __name__ == "__main__":
+    _test_everything()

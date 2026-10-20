@@ -204,6 +204,12 @@ def execute_compiled_file(filepath: str) -> VariableDict:
     return _execute_compiled_code(code)
 
 
+def _do_test():
+    run_all_tests(execute_code, program_executor_kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True, test_file_location="BB files/De-extended Testing")
+    print()
+    run_all_benchmarks(_execute_compiled_code, lambda x: _compile_code(_process_program(x)), skip_timeouts=True, program_executor_kwargs={"loudness": 0}, test_file_location="BB files/De-extended Testing")
+
+
 if __name__ == "__main__":
     # import time
     # start_time = time.time()
@@ -220,6 +226,4 @@ if __name__ == "__main__":
     #     _execute_compiled_code(compiled_code)
     # print(time.time() - start_time)
 
-    run_all_tests(execute_code, program_executor_kwargs={"discard_underscore_prefixed_variables": True, "print_errors": False}, skip_timeouts=True, test_file_location="BB files/De-extended Testing")
-    print()
-    run_all_benchmarks(_execute_compiled_code, lambda x: _compile_code(_process_program(x)), skip_timeouts=True, program_executor_kwargs={"loudness": 0}, test_file_location="BB files/De-extended Testing")
+    _do_test()
