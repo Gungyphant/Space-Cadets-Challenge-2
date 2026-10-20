@@ -169,10 +169,10 @@ def _execute_compiled_code(code: CodeType, *, print_errors: bool = True, loudnes
             raise e
     except ProgramError as e:
         line_number_line = traceback.format_exc().splitlines()[-2]  # '  File "<string>", line XYZ, in <module>'
-        line_number = int(line_number_line[24:-13])
         if isinstance(code, str):
             code = code.splitlines()
         line = code[line_number]
+        line_number = int(line_number_line[34:-13])
         if print_errors:
             if loudness >= 1:
                 print(f"! Error on line {line_number}: {line}\n!     {repr(e)}")
