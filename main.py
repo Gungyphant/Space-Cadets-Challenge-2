@@ -173,10 +173,9 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     """
     # TODO: revert ProcessedLines to lines when they need to be output
     variables = {}
-    result = {}
     try:
         processed_code = _process_program(code)
-        result = _parse_code(processed_code, variables, loudness, timeout)
+        _parse_code(processed_code, variables, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
@@ -189,16 +188,16 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
                 print(f"! {repr(e)} occurred")
         else:
             raise _InnerCodeError(e, -1, "")
-    if result and discard_underscore_prefixed_variables:
-        return {k: v for k, v in result.items() if not k.startswith("_")}
+    if discard_underscore_prefixed_variables:
+        return {k: v for k, v in variables.items() if not k.startswith("_")}
     else:
-        return result
+        return variables
 
 
-def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: int, timeout: float) -> VariableDict:
+def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: int, timeout: float) -> None:
     """Parses a subsection of a Bare Bones program
 
-    :returns: A dictionary of the final values of the variables when the section terminates
+    Note that variables is modified in place.
     """
     # _parse_code works recursively; each `while` block is passed to a new parse_code each time until (if ever) the loop terminates
     # TODO optimisation: make it non-recursive to reduce function overhead
@@ -261,8 +260,6 @@ def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: in
     if while_mode:
         # The program terminated without reaching an `end;`
         raise SyntacticalError(f"A `while` went unclosed")
-
-    return variables
 
 
 def parse_file(filepath: str, *, print_errors: bool = True, loudness: int = 1, discard_underscore_prefixed_variables: bool = False) -> dict[str, int] | None:
