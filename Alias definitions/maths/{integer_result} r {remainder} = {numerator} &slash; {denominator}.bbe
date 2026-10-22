@@ -2,8 +2,6 @@ using maths;
 using comparisons;
 using variables;
 
-#_numerator_copy = numerator;
-_denominator_copy = denominator;
 clear integer_result;
 #clear remainder;
 

@@ -1,32 +1,32 @@
 using variables;
 using comparisons;
 
-_subtrahend_copy = subtrahend;
-_minuend_copy = minuend;
+_s_subtrahend_copy = subtrahend;
+_m_minuend_copy = minuend;
 
-_subtrahend_copy_ne_zero = _subtrahend_copy != 0;
-_minuend_copy_ne_zero = _minuend_copy != 0;
-_neither_are_zero = _minuend_copy_ne_zero and _subtrahend_copy_ne_zero;
+_s_subtrahend_copy_ne_zero = _s_subtrahend_copy != 0;
+_m_minuend_copy_ne_zero = _m_minuend_copy != 0;
+_neither_are_zero = _m_minuend_copy_ne_zero and _s_subtrahend_copy_ne_zero;
 while _neither_are_zero not 0 do;
-    decr _subtrahend_copy;
-    decr _minuend_copy;
+    decr _s_subtrahend_copy;
+    decr _m_minuend_copy;
 
-    _subtrahend_copy_ne_zero = _subtrahend_copy != 0;
-    _minuend_copy_ne_zero = _minuend_copy != 0;
-    _neither_are_zero = _minuend_copy_ne_zero and _subtrahend_copy_ne_zero;
+    _s_subtrahend_copy_ne_zero = _s_subtrahend_copy != 0;
+    _m_minuend_copy_ne_zero = _m_minuend_copy != 0;
+    _neither_are_zero = _m_minuend_copy_ne_zero and _s_subtrahend_copy_ne_zero;
 end;
 
 
 clear result;
 
-while _minuend_copy_ne_zero not 0 do;
-    # _minuend_copy_ne_zero is True, so minuend must be the larger
-    result = _minuend_copy;
-    clear _minuend_copy_ne_zero;
+while _m_minuend_copy_ne_zero not 0 do;
+    # _m_minuend_copy_ne_zero is True, so minuend must be the larger
+    result = _m_minuend_copy;
+    clear _m_minuend_copy_ne_zero;
 end;
 
-while _subtrahend_copy_ne_zero not 0 do;
-    # _subtrahend_copy_ne_zero is True, so subtrahend must be the larger
-    result = _subtrahend_copy;
-    clear _subtrahend_copy_ne_zero;
+while _s_subtrahend_copy_ne_zero not 0 do;
+    # _s_subtrahend_copy_ne_zero is True, so subtrahend must be the larger
+    result = _s_subtrahend_copy;
+    clear _s_subtrahend_copy_ne_zero;
 end;

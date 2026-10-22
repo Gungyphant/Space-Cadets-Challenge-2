@@ -1,11 +1,19 @@
 using maths;
 using variables;
 
-_first_multiplicand_variable_copy = first_multiplicand_variable;
-_second_multiplicand_variable_copy = second_multiplicand_variable;
+_fmv_first_multiplicand_variable_copy = first_multiplicand_variable;
+_smv_second_multiplicand_variable_copy = second_multiplicand_variable;
 clear result_variable;
-while _first_multiplicand_variable_copy not 0 do;
-    result_variable += _second_multiplicand_variable_copy;
-    decr _first_multiplicand_variable_copy;
+while _fmv_first_multiplicand_variable_copy not 0 do;
+#    print;
+#    print _fmv_first_multiplicand_variable_copy;
+#    print _smv_second_multiplicand_variable_copy;
+#    print result_variable;
+    result_variable += _smv_second_multiplicand_variable_copy;
+#    print;
+#    print _fmv_first_multiplicand_variable_copy;
+#    print _smv_second_multiplicand_variable_copy;
+#    print result_variable;
+    decr _fmv_first_multiplicand_variable_copy;
 end;
 # Note: this is faster if first_multiplicand_variable is larger than second_multiplicand_variable
