@@ -1,0 +1,19 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+
+# Same variable:
+A = X * X;
+
+clear Y;
+incr Y;
+incr Y;
+incr Y;
+
+# Same value:
+B = X * Y;
+
+#vars:A=9,B=9,X=3,Y=3

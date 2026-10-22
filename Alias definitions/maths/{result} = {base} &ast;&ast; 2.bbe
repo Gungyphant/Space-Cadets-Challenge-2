@@ -1,0 +1,4 @@
+using maths;
+using variables;
+
+result = base * base;

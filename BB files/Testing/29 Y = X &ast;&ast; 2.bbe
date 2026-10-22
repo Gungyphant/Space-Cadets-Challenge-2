@@ -1,0 +1,9 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+
+Y = X ** 2;
+#vars:X=3,Y=9
