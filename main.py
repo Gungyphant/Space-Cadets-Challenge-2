@@ -7,7 +7,8 @@ from typing import Tuple
 from errors import ProgramError, UndefinedVariableError, NegativeError, SyntacticalError, MultilineExpressionError, TimeoutError, _InnerCodeError
 from utils import *
 
-VariableDict = dict[str, int]  # Custom type hint for variables
+VariableDict = dict[str, int]
+TypeDict = dict[str, str]
 
 class Command(Enum):
     INCR = 0
@@ -16,7 +17,8 @@ class Command(Enum):
     WHILE = 3
     END = 4
     PRINT = 5
-ProcessedLine = Tuple[Command, str] | None  # the string is the variable the command acts on (None represents a blank line)
+    TYPE = 6
+ProcessedLine = Tuple[Command, str] | Tuple[Command, str, str] | None  # the string is the variable the command acts on (None represents a blank line)
 
 VARIABLE_REGEX = r"(\w{2,}|[a-zA-Z_])"
 
@@ -67,11 +69,18 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
                             if end_match:
                                 return Command.END, ""
 
-                            # Doesn't match any BB command; raise an error:
-                            elif not line.endswith(";"):
-                                raise SyntacticalError(f"Missing semicolon on line '{line}'")
                             else:
-                                raise SyntacticalError(f"Unparsable line '{line}'")
+                                typing_match = re.fullmatch(fr"{VARIABLE_REGEX}: ?(int|char|list\[int]|str)", line)
+                                if typing_match:
+                                    variable_name = typing_match.group(1)
+                                    type_name = typing_match.group(2)
+                                    return Command.TYPE, variable_name, type_name
+
+                                # Doesn't match any BB command; raise an error:
+                                elif not line.endswith(";"):
+                                    raise SyntacticalError(f"Missing semicolon on line '{line}'")
+                                else:
+                                    raise SyntacticalError(f"Unparsable line '{line}'")
 
 
 def _process_program(code: str | list[str]) -> list[ProcessedLine]:
@@ -88,20 +97,20 @@ def _process_program(code: str | list[str]) -> list[ProcessedLine]:
     return result
 
 
-def parse_line(line: str, variables: VariableDict, *, do_strip: bool = True) -> None:
+def parse_line(line: str, variables: VariableDict, variable_types: TypeDict, *, do_strip: bool = True) -> None:
     """Parse a line of Bare Bones, updating `variables` accordingly
 
     Note: only parses single-line statements; while loops are not supported (use parse_code)
 
     Pass the keyword-only argument do_strip as False if the line has already been stripped (to avoid unnecessary re-stripping) (Note that unstripped lines passed with do_strip=False will raise a SyntacticalError)
     """
-    _parse_line(_process_line(line, do_strip=do_strip), variables)
+    _parse_line(_process_line(line, do_strip=do_strip), variables, variable_types)
 
 
-def _parse_line(line: ProcessedLine, variables: VariableDict) -> None:
+def _parse_line(line: ProcessedLine, variables: VariableDict, variable_types: TypeDict) -> None:
     if line is None:
         return
-    command, variable_name = line
+    command, variable_name, *others = line
     match command:
         case Command.INCR:
             if variable_name not in variables:
@@ -125,12 +134,30 @@ def _parse_line(line: ProcessedLine, variables: VariableDict) -> None:
                 if variable_name not in variables:
                     raise UndefinedVariableError(f"Tried to print the variable '{variable_name}' prior to it being initialised")
                 else:
-                    print(variables[variable_name])
+                    variable = variables[variable_name]
+                    if variable_name not in variable_types:
+                        # int
+                        print(variable)
+                    else:
+                        match variable_types[variable_name]:
+                            case "char":
+                                print(chr(variable), end="")
+                            case "list[int]":
+                                raise NotImplementedError()
+                            case "str":
+                                raise NotImplementedError()
             else:
                 print()
 
         case Command.WHILE | Command.END:
             raise MultilineExpressionError(f"Attempted to run a multiline statement on the line '{line}'")
+
+        case Command.TYPE:
+            type = others[0]
+            if type == "int":
+                variable_types.pop(variable_name)  # variables are ints if not specified
+            else:
+                variable_types[variable_name] = type
 
         case _:
             raise ValueError(f"Unexpected Command {command}")
@@ -174,9 +201,10 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
     """
     # TODO: revert ProcessedLines to lines when they need to be output
     variables = {}
+    variable_types = {}
     try:
         processed_code = _process_program(code)
-        _parse_code(processed_code, variables, loudness, timeout)
+        _parse_code(processed_code, variables, variable_types, loudness, timeout)
     except _InnerCodeError as e:
         if print_errors:
             if loudness >= 1:
@@ -195,7 +223,7 @@ def parse_code(code: str | list[str], *, print_errors: bool = True, loudness: in
         return variables
 
 
-def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: int, timeout: float) -> None:
+def _parse_code(code: list[ProcessedLine], variables: VariableDict, variable_types: TypeDict, loudness: int, timeout: float) -> None:
     """Parses a subsection of a Bare Bones program
 
     Note that variables is modified in place.
@@ -215,7 +243,7 @@ def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: in
     while_depth = 0
     for line_number, line in enumerate(code):
         if line is None: continue
-        command, variable = line
+        command, variable, *others = line
         # When in normal mode (while_mode == False), run the code. When in while mode, cache the lines to execute once the entire loop is known
         if timeout < float("inf") and time.time() - start_time > timeout:
             raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
@@ -228,7 +256,7 @@ def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: in
                 while_depth = 0
             else:
                 try:
-                    _parse_line(line, variables)
+                    _parse_line(line, variables, variable_types)
                 except ProgramError as e:
                     raise _InnerCodeError(e, line_number + 1, f"{command.name.lower()} {variable};")
                 else:
@@ -245,7 +273,7 @@ def _parse_code(code: list[ProcessedLine], variables: VariableDict, loudness: in
                 try:
                     while variables[while_var] != 0:
                         try:
-                            _parse_code(while_code, variables, loudness, timeout - (time.time() - start_time))
+                            _parse_code(while_code, variables, variable_types, loudness, timeout - (time.time() - start_time))
                         except TimeoutError:
                             # Correct the timeout
                             raise TimeoutError(f"The program exceeded the {format_time(timeout)} timeout")
@@ -285,4 +313,5 @@ def _do_test():
     run_all_benchmarks(parse_code, program_executor_kwargs={"print_errors": True, "loudness": 0, "timeout": 1.0, "discard_underscore_prefixed_variables": True}, test_file_location="BB files/De-extended Testing")
 
 if __name__ == "__main__":
-    _do_test()
+    parse_file("BB files/Typing test.bb")
+    # _do_test()
