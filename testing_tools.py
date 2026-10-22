@@ -10,7 +10,9 @@ from utils import format_time
 
 I = TypeVar("I")
 O = TypeVar("O")
-def _combine_function_with_kwargs(func: Callable[[I, ...], O] | Callable[[I], O], kwargs: dict | None) -> Callable[[I], O]:
+def _combine_function_with_kwargs(
+        func: Callable[[I, ...], O] | Callable[[I], O],
+        kwargs: dict | None) -> Callable[[I], O]:
     if kwargs is None:
         func: Callable[[I], O]
         return func
@@ -23,13 +25,11 @@ def _combine_function_with_kwargs(func: Callable[[I, ...], O] | Callable[[I], O]
 
 T = TypeVar('T')
 identity_function = lambda x: x
-def _generate_true_executor(
-        program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
-        program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
-        *,
-        program_executor_kwargs: dict | None = None,
-        program_compiler_kwargs: dict | None = None,
-) -> Callable[[list[str]], VariableDict]:
+def _generate_true_executor(program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
+                            program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
+                            *,
+                            program_executor_kwargs: dict | None = None,
+                            program_compiler_kwargs: dict | None = None) -> Callable[[list[str]], VariableDict]:
     """Combines a program executor and a program compiler (and their keywords) into a single function that takes code and outputs the result of running it"""
     if program_executor_kwargs is None:
         program_executor_kwargs: dict = {}
@@ -44,25 +44,23 @@ def _generate_true_executor(
     return true_executor
 
 
-def run_all_tests(
-        program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
-        program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
-        *,
-        program_executor_kwargs: dict | None = None,
-        program_compiler_kwargs: dict | None = None,
-        skip_timeouts: bool = False,
-        valid_extensions: Iterable[str] | None = None,
-        test_file_location: str = "BB files/Testing",
-) -> None:
+def run_all_tests(program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
+                  program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
+                  *,
+                  program_executor_kwargs: dict | None = None,
+                  program_compiler_kwargs: dict | None = None,
+                  skip_timeouts: bool = False,
+                  valid_extensions: Iterable[str] | None = None,
+                  test_file_location: str = "BB files/Testing") -> None:
     """Tests an executor (and, optionally, a compiler) on all the test files in a folder
 
-    `program_compiler` is the function that converts the code in the test files into a format that program_executor can run. If none is provided, it simply passes the code directly to program_executor.
-    `program_executor` is the function that executes the compiled code.
-    `program_executor_kwargs` is an optional dict of keyword-arguments to pass to program_executor.
-    `program_compiler_kwargs` is an optional dict of keyword-arguments to pass to program_compiler.
-    `skip_timeouts` is a bool which, if True, skips any test file expected to cause a TimeoutError, to allow executors which do not implement a timeout to be tested.
-    `valid_extensions` is an iterable of all file extensions to test, defaulting to {".bb"}.
-    `test_file_location` is the filepath for the test files, defaulting to BB files/Testing.
+    :param program_compiler: the function that converts the code in the test files into a format that program_executor can run. If none is provided, it simply passes the code directly to program_executor.
+    :param program_executor: the function that executes the compiled code.
+    :param program_executor_kwargs: an optional dict of keyword-arguments to pass to program_executor.
+    :param program_compiler_kwargs: an optional dict of keyword-arguments to pass to program_compiler.
+    :param skip_timeouts: a bool which, if True, skips any test file expected to cause a TimeoutError, to allow executors which do not implement a timeout to be tested. Defaults to False.
+    :param valid_extensions: is an iterable of all file extensions to test, defaulting to {".bb"}.
+    :param test_file_location: is the filepath for the test files, defaulting to BB files/Testing.
     """
     if valid_extensions is None:
         valid_extensions: Iterable[str] = {".bb"}
@@ -73,7 +71,11 @@ def run_all_tests(
 #         program_executor: Callable[Concatenate[list[str], ...], VariableDict] = parse_code,
 #         kwargs: dict[str, Any] = {"print_errors": False, "timeout": 3},
 # ) -> None:
-def _run_all_tests(program_executor: Callable[[list[str]], VariableDict], skip_timeouts: bool, valid_extensions: Iterable[str], test_file_location: str) -> None:
+def _run_all_tests(
+        program_executor: Callable[[list[str]], VariableDict],
+        skip_timeouts: bool,
+        valid_extensions: Iterable[str],
+        test_file_location: str) -> None:
     for test_file in os.listdir(test_file_location):
         if pathlib.Path(test_file).suffix in valid_extensions:
             f = open(f"{test_file_location}/{test_file}")
@@ -106,27 +108,25 @@ def _run_all_tests(program_executor: Callable[[list[str]], VariableDict], skip_t
                 print(f"Failed. Got {result}")
 
 
-def run_all_benchmarks(
-        program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
-        program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
-        *,
-        program_executor_kwargs: dict | None = None,
-        program_compiler_kwargs: dict | None = None,
-        skip_timeouts: bool = False,
-        valid_extensions: Iterable[str] | None = None,
-        time_per_file: float = 1.0,
-        test_file_location: str = "BB files/Testing",
-) -> None:
+def run_all_benchmarks(program_executor: Callable[[T, ...], VariableDict] | Callable[[T], VariableDict],
+                       program_compiler: Callable[[list[str], ...], T] | Callable[[list[str]], T] = identity_function,
+                       *,
+                       program_executor_kwargs: dict | None = None,
+                       program_compiler_kwargs: dict | None = None,
+                       skip_timeouts: bool = False,
+                       valid_extensions: Iterable[str] | None = None,
+                       time_per_file: float = 1.0,
+                       test_file_location: str = "BB files/Testing") -> None:
     """Benchmarks an executor (and, optionally, a compiler) on all the test files in a folder
 
-    `program_compiler` is the function that converts the code in the test files into a format that program_executor can run. If none is provided, it simply passes the code directly to program_executor.
-    `program_executor` is the function that executes the compiled code.
-    `program_executor_kwargs` is an optional dict of keyword-arguments to pass to program_executor.
-    `program_compiler_kwargs` is an optional dict of keyword-arguments to pass to program_compiler.
-    `skip_timeouts` is a bool which, if True, skips any test file expected to cause a TimeoutError, to allow executors which do not implement a timeout to be tested.
-    `valid_extensions` is an iterable of all file extensions to test, defaulting to {".bb"}.
-    `time_per_file` is how long (minimum) it should spend on each compilation/execution.
-    `test_file_location` is the filepath for the test files, defaulting to BB files/Testing.
+    :param program_compiler: the function that converts the code in the test files into a format that program_executor can run. If none is provided, it simply passes the code directly to program_executor.
+    :param program_executor: the function that executes the compiled code.
+    :param program_executor_kwargs: an optional dict of keyword-arguments to pass to program_executor.
+    :param program_compiler_kwargs: an optional dict of keyword-arguments to pass to program_compiler.
+    :param skip_timeouts: a bool which, if True, skips any test file expected to cause a TimeoutError, to allow executors which do not implement a timeout to be tested. Defaults to False.
+    :param valid_extensions: is an iterable of all file extensions to test, defaulting to {".bb"}.
+    :param time_per_file: is how long (minimum) it should spend on each compilation/execution.
+    :param test_file_location: is the filepath for the test files, defaulting to BB files/Testing.
     Note that program_compiler and program_executor must not raise errors during execution
     """
     if valid_extensions is None:
