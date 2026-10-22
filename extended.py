@@ -188,4 +188,5 @@ def _do_test():
     # print(parse_extended_file("BB files/Factorial.bbe"))
 
 if __name__ == "__main__":
-    _do_test()
+    parse_extended_file("BB files/Hello, world!.bbe")
+    # _do_test()

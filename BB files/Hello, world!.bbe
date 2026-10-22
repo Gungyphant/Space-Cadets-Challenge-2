@@ -1,0 +1,19 @@
+using variables;
+make all ascii variables;
+
+print _uppercase_h;
+print _lowercase_e;
+print _lowercase_l;
+print _lowercase_l;
+print _lowercase_o;
+print _comma;
+print _space;
+print _lowercase_w;
+print _lowercase_o;
+print _lowercase_r;
+print _lowercase_l;
+print _lowercase_d;
+print _exclamation_mark;
+# windows newline:
+print _CR;
+print _LF;
