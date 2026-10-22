@@ -18,6 +18,7 @@ class Command(Enum):
     PRINT = 5
 ProcessedLine = Tuple[Command, str] | None  # the string is the variable the command acts on (None represents a blank line)
 
+VARIABLE_REGEX = r"(\w{2,}|[a-zA-Z_])"
 
 def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
     """Convert lines to ProcessedLines"""
@@ -27,25 +28,25 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
     if not line or line.startswith("#"):
         return  # Ignore blank lines and comment lines
 
-    incr_match = re.fullmatch(r"incr (\w{2,}|[a-zA-Z_]);", line)
+    incr_match = re.fullmatch(fr"incr {VARIABLE_REGEX};", line)
     if incr_match:
         variable_name = incr_match.group(1)
         return Command.INCR, variable_name
 
     else:
-        decr_match = re.fullmatch(r"decr (\w{2,}|[a-zA-Z_]);", line)
+        decr_match = re.fullmatch(fr"decr {VARIABLE_REGEX};", line)
         if decr_match:
             variable_name = decr_match.group(1)
             return Command.DECR, variable_name
 
         else:
-            clear_match = re.fullmatch(r"clear (\w{2,}|[a-zA-Z_]);", line)
+            clear_match = re.fullmatch(fr"clear {VARIABLE_REGEX};", line)
             if clear_match:
                 variable_name = clear_match.group(1)
                 return Command.CLEAR, variable_name
 
             else:
-                print_match = re.fullmatch(r"print (\w{2,}|[a-zA-Z_]);", line)
+                print_match = re.fullmatch(fr"print {VARIABLE_REGEX};", line)
                 if print_match:
                     variable_name = print_match.group(1)
                     return Command.PRINT, variable_name
@@ -56,7 +57,7 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
                         return Command.PRINT, ""
 
                     else:
-                        while_match = re.fullmatch(r"while (\w{2,}|[a-zA-Z_]) not 0 do;", line)
+                        while_match = re.fullmatch(fr"while {VARIABLE_REGEX} not 0 do;", line)
                         if while_match:
                             variable_name = while_match.group(1)
                             return Command.WHILE, variable_name
