@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="GMndWAqAtwfBlTymjsuk">
+    <mxGraphModel dx="806" dy="482" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="95oIEB1aaFrfghU8lZUN-6" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="95oIEB1aaFrfghU8lZUN-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-7" connectable="0" parent="95oIEB1aaFrfghU8lZUN-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="extended._de_extend_code" vertex="1">
+          <mxGeometry relative="1" x="0.1167" as="geometry">
+            <mxPoint y="-5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Bare Bones&lt;div&gt;Extended&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(130, 130, 130);&quot;&gt;(str)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="320" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-2" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;" value=".bbe file" vertex="1">
+          <mxGeometry height="80" width="120" x="120" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-4" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-2" style="endArrow=classicThin;dashed=1;html=1;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;endFill=1;" target="95oIEB1aaFrfghU8lZUN-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="370" y="270" as="sourcePoint" />
+            <mxPoint x="420" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-12" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="95oIEB1aaFrfghU8lZUN-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-13" connectable="0" parent="95oIEB1aaFrfghU8lZUN-12" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="main._process_program" vertex="1">
+          <mxGeometry relative="1" x="-0.0083" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Bare Bones&lt;div&gt;&lt;span style=&quot;color: rgb(130, 130, 130);&quot;&gt;(str)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="320" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-8" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;" value=".bb file" vertex="1">
+          <mxGeometry height="80" width="120" x="120" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-9" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-8" style="endArrow=classicThin;dashed=1;html=1;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classicThin;startFill=1;endFill=1;" target="95oIEB1aaFrfghU8lZUN-5" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="350" y="340" as="sourcePoint" />
+            <mxPoint x="400" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-15" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="95oIEB1aaFrfghU8lZUN-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-16" connectable="0" parent="95oIEB1aaFrfghU8lZUN-15" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="compiler._compile_code" vertex="1">
+          <mxGeometry relative="1" x="0.0364" y="-3" as="geometry">
+            <mxPoint y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-23" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="95oIEB1aaFrfghU8lZUN-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-24" connectable="0" parent="95oIEB1aaFrfghU8lZUN-23" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="main._parse_code" vertex="1">
+          <mxGeometry relative="1" x="-0.0676" y="-5" as="geometry">
+            <mxPoint x="-15" y="8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Processed Bare Bones&lt;div&gt;&lt;span style=&quot;color: rgb(130, 130, 130);&quot;&gt;(list[ProcessedLine])&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="320" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-20" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;dashed=1;startArrow=classicThin;startFill=1;endArrow=classicThin;endFill=1;" target="95oIEB1aaFrfghU8lZUN-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-22" edge="1" parent="1" source="95oIEB1aaFrfghU8lZUN-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;" target="95oIEB1aaFrfghU8lZUN-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-25" connectable="0" parent="95oIEB1aaFrfghU8lZUN-22" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;defaultLabelBackgroundColor=page;" value="compiler._execute_compiled_code" vertex="1">
+          <mxGeometry relative="1" x="-0.0298" y="1" as="geometry">
+            <mxPoint x="33" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Python bytecode&lt;div&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(130, 130, 130));&quot;&gt;(CodeType)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="380" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-19" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;" value=".pyc file" vertex="1">
+          <mxGeometry height="80" width="120" x="580" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="95oIEB1aaFrfghU8lZUN-21" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Results&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(130, 130, 130));&quot;&gt;(VariableDict)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="320" y="760" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
