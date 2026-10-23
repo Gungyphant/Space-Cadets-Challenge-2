@@ -1,0 +1,13 @@
+using maths;
+using variables;
+
+_b_base_copy = base;
+_e_exponent_copy = exponent;
+clear result;
+incr result;
+
+while _e_exponent_copy not 0 do;
+    result = result * _b_base_copy;
+
+    decr _e_exponent_copy;
+end;

@@ -1,0 +1,16 @@
+using maths;
+
+clear X;
+incr X;
+incr X;
+incr X;
+incr X;
+
+clear Y;
+incr Y;
+A = X ** Y;
+incr Y;
+B = X ** Y;
+incr Y;
+C = X ** Y;
+#vars:A=4,B=16,C=64,X=4,Y=3
