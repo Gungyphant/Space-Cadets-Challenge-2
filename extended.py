@@ -82,24 +82,27 @@ def _de_extend_code(code: list[str]) -> list[str]:
             non_using_lines.append(line)
 
     # Substitute in all aliases
-    converted_code = []
-    for line in non_using_lines:
-        keep = True
-        for regex_form, (parameters, program_code) in aliases.items():
-            alias_match = re.fullmatch(regex_form, line)
-            if alias_match:
-                converted_code.append("#> " + line)
-                for alias_parameter, corresponding_variable in zip(parameters, alias_match.groups()):
-                    program_code = [line.replace(alias_parameter, corresponding_variable) for line in program_code]
-                converted_code += program_code
-                converted_code.append("#< done " + line)
-                keep = False
-                break  # Each line should only match one alias
+    if aliases:
+        converted_code = []
+        for line in non_using_lines:
+            keep = True
+            for regex_form, (parameters, program_code) in aliases.items():
+                alias_match = re.fullmatch(regex_form, line)
+                if alias_match:
+                    converted_code.append("#> " + line)
+                    for alias_parameter, corresponding_variable in zip(parameters, alias_match.groups()):
+                        program_code = [line.replace(alias_parameter, corresponding_variable) for line in program_code]
+                    converted_code += program_code
+                    converted_code.append("#< done " + line)
+                    keep = False
+                    break  # Each line should only match one alias
 
-        if keep:
-            converted_code.append(line)
+            if keep:
+                converted_code.append(line)
 
-    return _clean_up_code(converted_code)
+        return _clean_up_code(converted_code)
+    else:
+        return code
 
 
 def _clean_up_code(code: str | list[str]) -> list[str]:
@@ -188,5 +191,5 @@ def _do_test():
     # print(parse_extended_file("BB files/Factorial.bbe"))
 
 if __name__ == "__main__":
-    parse_extended_file("BB files/Hello, world!.bbe")
-    # _do_test()
+    # parse_extended_file("BB files/Hello, world!.bbe")
+    _do_test()
