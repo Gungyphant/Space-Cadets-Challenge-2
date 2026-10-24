@@ -70,7 +70,7 @@ def _process_line(line: str, *, do_strip: bool = True) -> ProcessedLine:
                                 return Command.END, ""
 
                             else:
-                                typing_match = re.fullmatch(fr"{VARIABLE_REGEX}: ?(int|char|list\[int]|str)", line)
+                                typing_match = re.fullmatch(fr"{VARIABLE_REGEX}: ?(int|char|bit vector);", line)
                                 if typing_match:
                                     variable_name = typing_match.group(1)
                                     type_name = typing_match.group(2)

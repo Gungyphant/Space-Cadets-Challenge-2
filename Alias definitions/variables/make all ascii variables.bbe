@@ -1,388 +1,388 @@
 using variables;
 clear _X;
 # Codes:
-_NULL: char
+_NULL: char;
 _NULL = _X;
 incr _X;
-_SOH: char
+_SOH: char;
 _SOH = _X;
 incr _X;
-_STX: char
+_STX: char;
 _STX = _X;
 incr _X;
-_ETX: char
+_ETX: char;
 _ETX = _X;
 incr _X;
-_EOT: char
+_EOT: char;
 _EOT = _X;
 incr _X;
-_ENQ: char
+_ENQ: char;
 _ENQ = _X;
 incr _X;
-_ACK: char
+_ACK: char;
 _ACK = _X;
 incr _X;
-_BEL: char
+_BEL: char;
 _BEL = _X;
 incr _X;
-_BS: char
+_BS: char;
 _BS = _X;
 incr _X;
-_TAB: char
+_TAB: char;
 _TAB = _X;
 incr _X;
-_LF: char
+_LF: char;
 _LF = _X;
 incr _X;
-_VT: char
+_VT: char;
 _VT = _X;
 incr _X;
-_FF: char
+_FF: char;
 _FF = _X;
 incr _X;
-_CR: char
+_CR: char;
 _CR = _X;
 incr _X;
-_SO: char
+_SO: char;
 _SO = _X;
 incr _X;
-_SI: char
+_SI: char;
 _SI = _X;
 incr _X;
-_DLE: char
+_DLE: char;
 _DLE = _X;
 incr _X;
-_DC1: char
+_DC1: char;
 _DC1 = _X;
 incr _X;
-_DC2: char
+_DC2: char;
 _DC2 = _X;
 incr _X;
-_DC3: char
+_DC3: char;
 _DC3 = _X;
 incr _X;
-_DC4: char
+_DC4: char;
 _DC4 = _X;
 incr _X;
-_NAK: char
+_NAK: char;
 _NAK = _X;
 incr _X;
-_SYN: char
+_SYN: char;
 _SYN = _X;
 incr _X;
-_ETB: char
+_ETB: char;
 _ETB = _X;
 incr _X;
-_CAN: char
+_CAN: char;
 _CAN = _X;
 incr _X;
-_EM: char
+_EM: char;
 _EM = _X;
 incr _X;
-_SUB: char
+_SUB: char;
 _SUB = _X;
 incr _X;
-_ESC: char
+_ESC: char;
 _ESC = _X;
 incr _X;
-_FS: char
+_FS: char;
 _FS = _X;
 incr _X;
-_GS: char
+_GS: char;
 _GS = _X;
 incr _X;
-_RS: char
+_RS: char;
 _RS = _X;
 incr _X;
-_US: char
+_US: char;
 _US = _X;
 incr _X;
 # Unicode names:
-_space: char
+_space: char;
 _space = _X;
 incr _X;
-_exclamation_mark: char
+_exclamation_mark: char;
 _exclamation_mark = _X;
 incr _X;
-_quotation_mark: char
+_quotation_mark: char;
 _quotation_mark = _X;
 incr _X;
-_number_sign: char
+_number_sign: char;
 _number_sign = _X;
 incr _X;
-_dollar_sign: char
+_dollar_sign: char;
 _dollar_sign = _X;
 incr _X;
-_percent_sign: char
+_percent_sign: char;
 _percent_sign = _X;
 incr _X;
-_ampersand: char
+_ampersand: char;
 _ampersand = _X;
 incr _X;
-_apostrophe: char
+_apostrophe: char;
 _apostrophe = _X;
 incr _X;
-_left_parenthesis: char
+_left_parenthesis: char;
 _left_parenthesis = _X;
 incr _X;
-_right_parenthesis: char
+_right_parenthesis: char;
 _right_parenthesis = _X;
 incr _X;
-_asterisk: char
+_asterisk: char;
 _asterisk = _X;
 incr _X;
-_plus_sign: char
+_plus_sign: char;
 _plus_sign = _X;
 incr _X;
-_comma: char
+_comma: char;
 _comma = _X;
 incr _X;
-_hyphen_minus: char
+_hyphen_minus: char;
 _hyphen_minus = _X;
 incr _X;
-_full_stop: char
+_full_stop: char;
 _full_stop = _X;
 incr _X;
-_solidus: char
+_solidus: char;
 _solidus = _X;
 incr _X;
-_digit_zero: char
+_digit_zero: char;
 _digit_zero = _X;
 incr _X;
-_digit_one: char
+_digit_one: char;
 _digit_one = _X;
 incr _X;
-_digit_two: char
+_digit_two: char;
 _digit_two = _X;
 incr _X;
-_digit_three: char
+_digit_three: char;
 _digit_three = _X;
 incr _X;
-_digit_four: char
+_digit_four: char;
 _digit_four = _X;
 incr _X;
-_digit_five: char
+_digit_five: char;
 _digit_five = _X;
 incr _X;
-_digit_six: char
+_digit_six: char;
 _digit_six = _X;
 incr _X;
-_digit_seven: char
+_digit_seven: char;
 _digit_seven = _X;
 incr _X;
-_digit_eight: char
+_digit_eight: char;
 _digit_eight = _X;
 incr _X;
-_digit_nine: char
+_digit_nine: char;
 _digit_nine = _X;
 incr _X;
-_colon: char
+_colon: char;
 _colon = _X;
 incr _X;
-_semicolon: char
+_semicolon: char;
 _semicolon = _X;
 incr _X;
-_less_than_sign: char
+_less_than_sign: char;
 _less_than_sign = _X;
 incr _X;
-_equals_sign: char
+_equals_sign: char;
 _equals_sign = _X;
 incr _X;
-_greater_than_sign: char
+_greater_than_sign: char;
 _greater_than_sign = _X;
 incr _X;
-_question_mark: char
+_question_mark: char;
 _question_mark = _X;
 incr _X;
-_commercial_at: char
+_commercial_at: char;
 _commercial_at = _X;
 incr _X;
-_uppercase_a: char
+_uppercase_a: char;
 _uppercase_a = _X;
 incr _X;
-_uppercase_b: char
+_uppercase_b: char;
 _uppercase_b = _X;
 incr _X;
-_uppercase_c: char
+_uppercase_c: char;
 _uppercase_c = _X;
 incr _X;
-_uppercase_d: char
+_uppercase_d: char;
 _uppercase_d = _X;
 incr _X;
-_uppercase_e: char
+_uppercase_e: char;
 _uppercase_e = _X;
 incr _X;
-_uppercase_f: char
+_uppercase_f: char;
 _uppercase_f = _X;
 incr _X;
-_uppercase_g: char
+_uppercase_g: char;
 _uppercase_g = _X;
 incr _X;
-_uppercase_h: char
+_uppercase_h: char;
 _uppercase_h = _X;
 incr _X;
-_uppercase_i: char
+_uppercase_i: char;
 _uppercase_i = _X;
 incr _X;
-_uppercase_j: char
+_uppercase_j: char;
 _uppercase_j = _X;
 incr _X;
-_uppercase_k: char
+_uppercase_k: char;
 _uppercase_k = _X;
 incr _X;
-_uppercase_l: char
+_uppercase_l: char;
 _uppercase_l = _X;
 incr _X;
-_uppercase_m: char
+_uppercase_m: char;
 _uppercase_m = _X;
 incr _X;
-_uppercase_n: char
+_uppercase_n: char;
 _uppercase_n = _X;
 incr _X;
-_uppercase_o: char
+_uppercase_o: char;
 _uppercase_o = _X;
 incr _X;
-_uppercase_p: char
+_uppercase_p: char;
 _uppercase_p = _X;
 incr _X;
-_uppercase_q: char
+_uppercase_q: char;
 _uppercase_q = _X;
 incr _X;
-_uppercase_r: char
+_uppercase_r: char;
 _uppercase_r = _X;
 incr _X;
-_uppercase_s: char
+_uppercase_s: char;
 _uppercase_s = _X;
 incr _X;
-_uppercase_t: char
+_uppercase_t: char;
 _uppercase_t = _X;
 incr _X;
-_uppercase_u: char
+_uppercase_u: char;
 _uppercase_u = _X;
 incr _X;
-_uppercase_v: char
+_uppercase_v: char;
 _uppercase_v = _X;
 incr _X;
-_uppercase_w: char
+_uppercase_w: char;
 _uppercase_w = _X;
 incr _X;
-_uppercase_x: char
+_uppercase_x: char;
 _uppercase_x = _X;
 incr _X;
-_uppercase_y: char
+_uppercase_y: char;
 _uppercase_y = _X;
 incr _X;
-_uppercase_z: char
+_uppercase_z: char;
 _uppercase_z = _X;
 incr _X;
-_left_square_bracket: char
+_left_square_bracket: char;
 _left_square_bracket = _X;
 incr _X;
-_reverse_solidus: char
+_reverse_solidus: char;
 _reverse_solidus = _X;
 incr _X;
-_right_square_bracket: char
+_right_square_bracket: char;
 _right_square_bracket = _X;
 incr _X;
-_circumflex_accent: char
+_circumflex_accent: char;
 _circumflex_accent = _X;
 incr _X;
-_low_line: char
+_low_line: char;
 _low_line = _X;
 incr _X;
-_grave_accent: char
+_grave_accent: char;
 _grave_accent = _X;
 incr _X;
-_lowercase_a: char
+_lowercase_a: char;
 _lowercase_a = _X;
 incr _X;
-_lowercase_b: char
+_lowercase_b: char;
 _lowercase_b = _X;
 incr _X;
-_lowercase_c: char
+_lowercase_c: char;
 _lowercase_c = _X;
 incr _X;
-_lowercase_d: char
+_lowercase_d: char;
 _lowercase_d = _X;
 incr _X;
-_lowercase_e: char
+_lowercase_e: char;
 _lowercase_e = _X;
 incr _X;
-_lowercase_f: char
+_lowercase_f: char;
 _lowercase_f = _X;
 incr _X;
-_lowercase_g: char
+_lowercase_g: char;
 _lowercase_g = _X;
 incr _X;
-_lowercase_h: char
+_lowercase_h: char;
 _lowercase_h = _X;
 incr _X;
-_lowercase_i: char
+_lowercase_i: char;
 _lowercase_i = _X;
 incr _X;
-_lowercase_j: char
+_lowercase_j: char;
 _lowercase_j = _X;
 incr _X;
-_lowercase_k: char
+_lowercase_k: char;
 _lowercase_k = _X;
 incr _X;
-_lowercase_l: char
+_lowercase_l: char;
 _lowercase_l = _X;
 incr _X;
-_lowercase_m: char
+_lowercase_m: char;
 _lowercase_m = _X;
 incr _X;
-_lowercase_n: char
+_lowercase_n: char;
 _lowercase_n = _X;
 incr _X;
-_lowercase_o: char
+_lowercase_o: char;
 _lowercase_o = _X;
 incr _X;
-_lowercase_p: char
+_lowercase_p: char;
 _lowercase_p = _X;
 incr _X;
-_lowercase_q: char
+_lowercase_q: char;
 _lowercase_q = _X;
 incr _X;
-_lowercase_r: char
+_lowercase_r: char;
 _lowercase_r = _X;
 incr _X;
-_lowercase_s: char
+_lowercase_s: char;
 _lowercase_s = _X;
 incr _X;
-_lowercase_t: char
+_lowercase_t: char;
 _lowercase_t = _X;
 incr _X;
-_lowercase_u: char
+_lowercase_u: char;
 _lowercase_u = _X;
 incr _X;
-_lowercase_v: char
+_lowercase_v: char;
 _lowercase_v = _X;
 incr _X;
-_lowercase_w: char
+_lowercase_w: char;
 _lowercase_w = _X;
 incr _X;
-_lowercase_x: char
+_lowercase_x: char;
 _lowercase_x = _X;
 incr _X;
-_lowercase_y: char
+_lowercase_y: char;
 _lowercase_y = _X;
 incr _X;
-_lowercase_z: char
+_lowercase_z: char;
 _lowercase_z = _X;
 incr _X;
-_left_curly_bracket: char
+_left_curly_bracket: char;
 _left_curly_bracket = _X;
 incr _X;
-_vertical_line: char
+_vertical_line: char;
 _vertical_line = _X;
 incr _X;
-_right_curly_bracket: char
+_right_curly_bracket: char;
 _right_curly_bracket = _X;
 incr _X;
-_tilde: char
+_tilde: char;
 _tilde = _X;
 incr _X;
 # Code:
-_DEL: char
+_DEL: char;
 _DEL = _X;
