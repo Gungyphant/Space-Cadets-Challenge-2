@@ -65,7 +65,7 @@ def _de_extend_code(code: list[str]) -> list[str]:
     aliases = {}  # {regex: (parameter names, code)}
     for line in code:
         line = line.strip()
-        using_match = re.fullmatch(r"\s*using (\w{2,}|[a-zA-Z_]);", line)
+        using_match = re.fullmatch(r"\s*using ((\w+ ?)+);", line)  # alias sets can include spaces in their names
         if using_match:
             alias = using_match.group(1)
             f = open(f"Aliases/{alias}.bba")
