@@ -219,6 +219,9 @@ def _test_everything():
     # Convert BBE tests to BB:
     import shutil
     from extended import compile_extended_file
+    if os.path.exists("BB files/De-extended Testing"):
+        shutil.rmtree("BB files/De-extended Testing")
+    os.mkdir("BB files/De-extended Testing")
     for file in os.listdir("BB files/Testing"):
         if file.endswith(".bb"):
             shutil.copy(f"BB files/Testing/{file}", f"BB files/De-extended Testing/{file}")
