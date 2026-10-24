@@ -1,0 +1,22 @@
+using bit vectors;
+using variables;
+make number variables up to 10;
+
+clear X;
+# X = 0 = 0b0...0 = [0, ..., 0]
+
+X[_ZERO] = 1;
+X[_ONE] = 1;
+X[_ONE] = 1;
+X[_THREE] = 1;
+
+# X = [1, 1, 0, 1] = 0b1011 = 11
+
+Y = X;
+Y[_ZERO] = 0;
+Y[_TWO] = 0;
+Y[_THREE] = 0;
+Y[_THREE] = 0;
+
+# Y = [0, 1, 0, 0] = 0b0010 = 2
+#vars:X=11,Y=2

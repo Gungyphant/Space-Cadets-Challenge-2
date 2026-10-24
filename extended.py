@@ -192,4 +192,5 @@ def _do_test():
 
 if __name__ == "__main__":
     # parse_extended_file("BB files/Hello, world!.bbe")
-    _do_test()
+    # _do_test()
+    parse_extended_file("BB files/Bit vector print test.bbe")

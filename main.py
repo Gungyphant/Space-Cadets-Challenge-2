@@ -142,10 +142,8 @@ def _parse_line(line: ProcessedLine, variables: VariableDict, variable_types: Ty
                         match variable_types[variable_name]:
                             case "char":
                                 print(chr(variable), end="")
-                            case "list[int]":
-                                raise NotImplementedError()
-                            case "str":
-                                raise NotImplementedError()
+                            case "bit vector":
+                                print([int(n) for n in bin(variable)[2:][::-1]])
             else:
                 print()
 

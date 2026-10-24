@@ -17,6 +17,8 @@ def generate_aliases(aliases_location):
         for alias_location in os.listdir(f"Alias definitions/{aliases_location}"):
             result = "[\n"
             for file in os.listdir(f"Alias definitions/{alias_location}"):
+                if not (file.endswith(".bb") or file.endswith(".bbe")):
+                    continue
                 signature = html.unescape(pathlib.Path(file).stem).replace("&slash;", "/")
                 variable_names = re.findall(r"{(\w{2,}|[a-zA-Z_])}", signature)
                 if any(name in ["incr", "decr", "clear", "while", "not", "0", "do", "end"] for name in variable_names):

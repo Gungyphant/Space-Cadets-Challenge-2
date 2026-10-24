@@ -1,0 +1,24 @@
+using bit vectors;
+using variables;
+
+make number variables up to 10;
+X = _TEN;
+incr X;
+incr X;
+incr X;
+# X == 13 == 0b1101 == [1, 0, 1, 1]
+
+A = X[_ZERO];
+B = X[_ONE];
+C = X[_TWO];
+D = X[_THREE];
+
+E = X;
+E[_TWO] = 0;
+# E = [1, 0, 0, 1] = 0b1001 = 9
+
+F = X;
+F[_ONE] = 1;
+# F = [1, 1, 1, 1] = 0b1111 = 15
+
+#vars:A=1,B=0,C=1,D=1,E=9,F=15,X=13

@@ -1,0 +1,21 @@
+using bit vectors;
+using variables;
+make number variables up to 10;
+
+clear X;
+# X = 0 = 0b0...0 = [0, ..., 0]
+
+unsafe X[_ZERO] = 1;
+unsafe X[_ONE] = 1;
+unsafe X[_TWO] = 1;
+unsafe X[_THREE] = 1;
+
+# X = [1, 1, 1, 1] = 0b1111 = 15
+
+Y = X;
+unsafe Y[_ZERO] = 0;
+unsafe Y[_TWO] = 0;
+unsafe Y[_THREE] = 0;
+
+# Y = [0, 1, 0, 0] = 0b0010 = 2
+#vars:X=15,Y=2

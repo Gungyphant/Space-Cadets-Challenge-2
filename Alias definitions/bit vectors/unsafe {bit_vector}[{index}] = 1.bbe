@@ -1,0 +1,10 @@
+# This alias should only be used if bit_vector[index] is known to be 0
+using bit vectors;
+using maths;
+
+clear _TWO;
+incr _TWO;
+incr _TWO;
+
+_2_to_the_n = _TWO ** index;
+bit_vector += _2_to_the_n;

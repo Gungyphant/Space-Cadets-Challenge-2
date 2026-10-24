@@ -1,0 +1,17 @@
+using bit vectors;
+using variables;
+
+make number variables up to 10;
+X = _TEN;
+incr X;
+incr X;
+incr X;
+# X == 13 == 0b1101 == [1, 0, 1, 1]
+
+A = X[_ZERO];
+B = X[_ONE];
+C = X[_TWO];
+D = X[_THREE];
+# Check infinite trailing 0s:
+E = X[_FOUR];
+#vars:A=1,B=0,C=1,D=1,E=0,X=13

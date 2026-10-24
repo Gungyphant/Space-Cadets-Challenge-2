@@ -1,0 +1,15 @@
+using bit vectors;
+using maths;
+
+clear _TWO;
+incr _TWO;
+incr _TWO;
+
+_current_value = bit_vector[index];
+
+while _current_value not 0 do;
+    # The current bit is 1; it's safe to use the unsafe set
+    unsafe bit_vector[index] = 0;
+
+    clear _current_value;
+end;

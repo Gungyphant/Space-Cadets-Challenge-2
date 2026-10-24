@@ -1,0 +1,11 @@
+using maths;
+using variables;
+
+clear _TWO;
+incr _TWO;
+incr _TWO;
+
+_2_to_the_n = _TWO ** index;
+
+_right_shifted_vector r _ = bit_vector / _2_to_the_n;
+result = _right_shifted_vector % _TWO;

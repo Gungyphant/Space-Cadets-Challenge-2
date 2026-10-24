@@ -1,0 +1,11 @@
+using bit vectors;
+using variables;
+
+make number variables up to 10;
+X = _TEN;
+incr X;
+incr X;
+incr X;
+X: bit vector;
+
+print X;

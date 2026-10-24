@@ -1,0 +1,17 @@
+using bit vectors;
+using comparisons;
+using maths;
+
+clear _TWO;
+incr _TWO;
+incr _TWO;
+
+_current_value = bit_vector[index];
+_not_current_value = not _current_value;
+
+while _not_current_value not 0 do;
+    # The current bit is 0; it's safe to use the unsafe set
+    unsafe bit_vector[index] = 1;
+
+    clear _not_current_value;
+end;
